@@ -864,7 +864,7 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.1'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 */
+const APP_VERSION = 'v1.2'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
@@ -997,10 +997,16 @@ async function wdSearch(q, lang){
   const d = await fetch(WD + `action=wbsearchentities&search=${encodeURIComponent(q)}&language=${lang}&uselang=ko&type=item&limit=8`).then(r => r.json());
   return (d.search || []).map(x => x.id);
 }
+async function wdWords(q){
+  const words = q.split(/\s+/).filter(Boolean).map(w => w.replace(/["*]/g, '') + '*').join(' ');
+  const d = await fetch(WD + `action=query&list=search&srlimit=8&srsearch=${encodeURIComponent(words + ' haswbstatement:P31=Q7889')}`).then(r => r.json()).catch(() => ({}));
+  return ((d.query && d.query.search) || []).map(x => x.title).filter(t => /^Q\d+$/.test(t));
+}
 async function wikidataGames(q, year){
   const vars = [q]; const r = q.replace(/\b(10|[1-9])\b/g, n => ROMAN[+n]); if (r !== q) vars.push(r);
-  const lists = await Promise.all(vars.flatMap(v => [wdSearch(v, 'ko'), wdSearch(v, 'en')]));
-  const ids = [...new Set(lists.flat())].slice(0, 20); if (!ids.length) return [];
+  /* 앞부분이 맞는 제목 검색(ko·en) + 줄임말용 낱말 검색("젤다 티어스" → 젤다* 티어스*) */
+  const lists = await Promise.all([...vars.flatMap(v => [wdSearch(v, 'ko'), wdSearch(v, 'en')]), ...vars.map(wdWords)]);
+  const ids = [...new Set(lists.flat())].slice(0, 30); if (!ids.length) return [];
   const d = await fetch(WD + `action=wbgetentities&ids=${ids.join('|')}&props=labels|claims&languages=ko|en|mul`).then(r => r.json());
   const out = [];
   ids.forEach(id => {
