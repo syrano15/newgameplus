@@ -1,0 +1,1721 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>뉴게임플러스</title>
+<meta name="description" content="한 게임과 할 게임을 남기는 게임 기록">
+<meta name="theme-color" content="#efecfb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0a1d" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --bg:#0c0a1d; --bg-2:#151033; --surface:rgba(34,29,68,.55); --surface-solid:#1b1736; --surface-2:rgba(255,255,255,.06); --line:rgba(170,160,255,.16); --line-2:rgba(170,160,255,.28);
+    --text:#efecff; --muted:#aca6cc; --faint:#8d87b0;
+    --accent:#8f7dff; --accent-2:#b46cff; --accent-ink:#ffffff; --star:#f7c948; --star-off:#3d3863; --low:#ff6f7d; --hi:#4fd18b;
+    --glow:rgba(143,125,255,.38); --shadow:0 18px 50px rgba(0,0,0,.45);
+    --deco:.55;
+  --radius:16px;
+  --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-in-out:cubic-bezier(0.77,0,0.175,1);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#efecfb; --bg-2:#e6e0fb; --surface:rgba(255,255,255,.72); --surface-solid:#ffffff; --surface-2:rgba(106,76,240,.07); --line:rgba(106,76,240,.15); --line-2:rgba(106,76,240,.3);
+    --text:#1b1638; --muted:#5d577c; --faint:#6b6590;
+    --accent:#6a4cf0; --accent-2:#9b5cf6; --accent-ink:#ffffff; --star:#f2a900; --star-off:#d9d3f0; --low:#e0384b; --hi:#16935a;
+    --glow:rgba(106,76,240,.28); --shadow:0 14px 40px rgba(70,50,160,.12);
+    --deco:.5;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#efecfb; --bg-2:#e6e0fb; --surface:rgba(255,255,255,.72); --surface-solid:#ffffff; --surface-2:rgba(106,76,240,.07); --line:rgba(106,76,240,.15); --line-2:rgba(106,76,240,.3);
+    --text:#1b1638; --muted:#5d577c; --faint:#6b6590;
+    --accent:#6a4cf0; --accent-2:#9b5cf6; --accent-ink:#ffffff; --star:#f2a900; --star-off:#d9d3f0; --low:#e0384b; --hi:#16935a;
+    --glow:rgba(106,76,240,.28); --shadow:0 14px 40px rgba(70,50,160,.12);
+    --deco:.5;
+}
+:root[data-theme="dark"]{
+  --bg:#0c0a1d; --bg-2:#151033; --surface:rgba(34,29,68,.55); --surface-solid:#1b1736; --surface-2:rgba(255,255,255,.06); --line:rgba(170,160,255,.16); --line-2:rgba(170,160,255,.28);
+    --text:#efecff; --muted:#aca6cc; --faint:#8d87b0;
+    --accent:#8f7dff; --accent-2:#b46cff; --accent-ink:#ffffff; --star:#f7c948; --star-off:#3d3863; --low:#ff6f7d; --hi:#4fd18b;
+    --glow:rgba(143,125,255,.38); --shadow:0 18px 50px rgba(0,0,0,.45);
+    --deco:.55;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+button,input,textarea,select{font:inherit;color:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 110px}
+
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:8px 0 20px}
+.brand h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:600;font-size:14px;
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease,filter .15s ease,transform .16s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){ .btn:hover{background:var(--surface-2)} }
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+@media (hover:hover) and (pointer:fine){ .btn.primary:hover{background:var(--accent);filter:brightness(1.07)} }
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+@media (hover:hover) and (pointer:fine){ .btn.ghost:hover{color:var(--text);background:var(--surface-2)} }
+.btn:active{transform:scale(.97)}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.danger{color:var(--low)}
+.btn.danger.armed{background:var(--low);color:#fff;border-color:transparent}
+.icon-btn{width:38px;height:38px;display:grid;place-items:center;padding:0}
+
+/* poster */
+.poster{position:relative;flex:none;border-radius:5px;overflow:hidden;
+  background:linear-gradient(150deg,var(--pc),color-mix(in srgb,var(--pc) 45%,#000));
+  color:#fff;display:flex;align-items:flex-end;padding:6px;font-weight:700;line-height:1.2;word-break:keep-all;
+  box-shadow:0 3px 8px rgba(0,0,0,.22)}
+.poster::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 40%)}
+.poster span{position:relative;text-shadow:0 1px 2px rgba(0,0,0,.35);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.poster.sm{width:48px;height:69px;font-size:9px}
+.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--surface-2)}
+.poster.has-img::before{display:none}
+.picks{display:flex;align-items:flex-start;gap:10px;overflow-x:auto;padding:10px 2px 4px;scrollbar-width:thin}
+.picks:empty{display:none}
+.pick{flex:none;width:76px;border:2px solid transparent;border-radius:9px;padding:2px;background:none;cursor:pointer;text-align:left;
+  transition:border-color .15s ease,transform .16s var(--ease-out)}
+.pick:active{transform:scale(.96)}
+@media (hover:hover) and (pointer:fine){ .pick:hover{border-color:color-mix(in srgb,var(--accent) 50%,transparent)} }
+.pick[aria-pressed="true"]{border-color:var(--accent)}
+.pick .ph{display:block;width:100%;aspect-ratio:2/3;border-radius:6px;background:var(--surface-2);object-fit:cover}
+.pick .ph.none{display:grid;place-items:center;color:var(--faint);font-size:11px}
+.pick small{display:block;font-size:11px;line-height:1.3;color:var(--muted);margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pick small b{color:var(--text);font-weight:600}
+.pickmsg{font-size:12px;color:var(--faint);margin-top:6px}
+.pickmsg button{background:none;border:0;padding:0;color:var(--accent);font-weight:700;font-size:12px;cursor:pointer}
+.credit{margin:36px 2px 0;font-size:11px;color:var(--faint);text-align:center}
+.poster.lg{width:104px;height:150px;font-size:13px;padding:8px}
+
+/* stars */
+.stars{position:relative;display:inline-block;line-height:0;vertical-align:middle}
+.stars .row{display:flex;gap:2px}
+.stars .on{position:absolute;inset:0 auto 0 0;overflow:hidden;white-space:nowrap}
+.stars svg{flex:none}
+.stars .off path{fill:var(--star-off)}
+.stars .on path{fill:var(--star)}
+
+/* hero */
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow);display:flex;gap:18px;cursor:pointer;
+  transition:transform .16s var(--ease-out)}
+.hero:active{transform:scale(.99)}
+.hero.empty{cursor:default}
+.hero.empty:active{transform:none}
+.hero::before{content:"";position:absolute;top:0;right:28px;width:24px;height:56px;background:var(--accent);opacity:.9;border-radius:0 0 4px 4px;
+  -webkit-mask:radial-gradient(circle at 5px 6px,#0000 2.1px,#000 2.6px) 0 0/100% 11px,radial-gradient(circle at calc(100% - 5px) 6px,#0000 2.1px,#000 2.6px) 0 0/100% 11px;
+  -webkit-mask-composite:source-in;
+  mask:radial-gradient(circle at 5px 6px,#0000 2.1px,#000 2.6px) 0 0/100% 11px,radial-gradient(circle at calc(100% - 5px) 6px,#0000 2.1px,#000 2.6px) 0 0/100% 11px;
+  mask-composite:intersect}
+.hero .info{flex:1;min-width:0}
+.hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
+.hero h2{margin:6px 44px 2px 0;font-size:21px;line-height:1.35;letter-spacing:-.01em}
+.hero .by{color:var(--muted);font-size:14px}
+.hero .score{display:flex;align-items:center;gap:8px;margin-top:10px}
+.hero .score b{font-size:18px;font-variant-numeric:tabular-nums}
+.quote{margin:12px 0 0;padding:12px 14px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--accent);white-space:pre-wrap}
+.hero .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.hero .muted{color:var(--muted);margin-top:6px}
+.stats-line{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--muted);font-size:13px;margin:14px 2px 0}
+.stats-line b{color:var(--text);font-variant-numeric:tabular-nums}
+
+/* tabs */
+.tabs{display:flex;gap:2px;margin:26px 0 14px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;padding:10px 12px;cursor:pointer;color:var(--muted);font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;
+  transition:color .15s ease,border-color .15s ease}
+.tab em{font-style:normal;color:var(--faint);font-weight:600;margin-left:4px;font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+
+.places{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.pill{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease,transform .16s var(--ease-out)}
+.pill em{font-style:normal;color:var(--faint);font-weight:600;font-variant-numeric:tabular-nums}
+.pill:active{transform:scale(.95)}
+.pill[aria-pressed="true"]{border-color:var(--accent);color:var(--text);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+.pill[aria-pressed="true"] em{color:var(--accent)}
+
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.in{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:none;transition:border-color .15s ease}
+.in:focus{border-color:var(--accent)}
+.tools .in{flex:1;min-width:160px;background:var(--surface)}
+.tools select.in{flex:none;width:auto;min-width:0;padding-right:30px;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23868f97' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center}
+.seg-mini{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg-mini button{border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:700;padding:8px 11px;cursor:pointer;transition:background-color .15s ease,color .15s ease}
+.seg-mini button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+
+/* list */
+.list{display:flex;flex-direction:column;gap:8px}
+.card{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;cursor:pointer;text-align:left;width:100%;
+  transition:transform .16s var(--ease-out),border-color .15s ease,opacity .18s ease}
+@media (hover:hover) and (pointer:fine){ .card:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))} }
+.card:active{transform:scale(.985)}
+.card.entering{opacity:0;transform:translateY(8px)}
+.card.leaving{opacity:0;transform:scale(.98)}
+.card .body{flex:1;min-width:0}
+.card .title{font-weight:700;line-height:1.35}
+.card .title .yr{color:var(--faint);font-weight:600;font-size:13px;margin-left:6px}
+.card .sub{color:var(--muted);font-size:13px;margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:pre-wrap}
+.card .sub.empty{color:var(--faint)}
+.card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;color:var(--faint);font-size:12px;margin-top:4px}
+.card .side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.card .side b{font-size:15px;font-variant-numeric:tabular-nums}
+.card.low .side b{color:var(--low)}
+.card .side small{color:var(--faint);font-size:12px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-weight:600;color:var(--muted)}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--tc)}
+.empty-box{border:1px dashed var(--line);border-radius:var(--radius);padding:32px 20px;text-align:center;color:var(--muted)}
+.empty-box b{display:block;color:var(--text);margin-bottom:4px}
+
+/* dialogs */
+dialog{border:0;padding:0;background:transparent;color:var(--text);max-width:560px;width:calc(100% - 24px)}
+dialog::backdrop{background:rgba(8,12,15,.6);backdrop-filter:blur(3px)}
+dialog{opacity:0;transform:scale(.97);transition:opacity .16s ease,transform .16s var(--ease-out),overlay .16s allow-discrete,display .16s allow-discrete}
+dialog[open]{opacity:1;transform:none;transition-duration:.22s}
+@starting-style{dialog[open]{opacity:0;transform:scale(.97)}}
+dialog::backdrop{opacity:0;transition:opacity .16s ease,overlay .16s allow-discrete,display .16s allow-discrete}
+dialog[open]::backdrop{opacity:1;transition-duration:.22s}
+@starting-style{dialog[open]::backdrop{opacity:0}}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);max-height:calc(100dvh - 40px);display:flex;flex-direction:column}
+.sheet-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 6px}
+.sheet-hd h3{margin:0;font-size:17px}
+.sheet-bd{padding:6px 18px 12px;overflow:auto}
+.sheet-ft{display:flex;gap:8px;align-items:center;padding:12px 18px 16px;border-top:1px solid var(--line)}
+.sheet-ft .right{display:flex;gap:8px;margin-left:auto}
+.f{display:block;margin:12px 0 0}
+.f > span,.flabel{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
+textarea.in{resize:vertical;min-height:110px;line-height:1.6}
+input[type="date"].in{min-height:40px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--muted);
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease,transform .16s var(--ease-out)}
+.seg button i{width:8px;height:8px;border-radius:50%;background:var(--tc)}
+.seg button:active{transform:scale(.94)}
+.seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--text);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.sheet:not([data-mode="seen"]) .seen-only{display:none}
+.sheet[data-mode="seen"] .memo-f{display:none}
+.sheet[data-mode="want"] .date-f{display:none}
+.sheet:not([data-result="clear"]) .clear-only{display:none}
+.sheet[data-mode="want"] .hours-f{display:none}
+.rwlist{display:flex;flex-wrap:wrap;gap:6px}
+.rwlist:empty{display:none}
+.rwchip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 10px;font-size:13px;font-variant-numeric:tabular-nums}
+.rwchip button{border:0;background:none;color:var(--faint);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;border-radius:50%}
+@media (hover:hover) and (pointer:fine){ .rwchip button:hover{color:var(--low)} }
+.rwadd{display:flex;gap:8px;margin-top:8px}
+.rwadd .in{flex:1}
+.kchip{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px;vertical-align:2px}
+.rw{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.card .side .watching{font-size:12px;font-weight:700;color:var(--accent)}
+
+/* stats */
+.st-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.st-years{display:flex;gap:6px;flex-wrap:wrap}
+.st-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.st-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.st-card.wide{grid-column:1 / -1}
+.st-card h4{margin:0 0 12px;font-size:14px;font-weight:700}
+.st-card h4 small{font-weight:500;color:var(--faint);margin-left:6px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;grid-column:1 / -1}
+.kpi{background:var(--surface);padding:14px 16px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px;letter-spacing:-.01em}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--faint);margin-left:2px}
+.rank{display:flex;flex-direction:column;gap:4px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:6px;margin:0 -6px;border:0;background:none;border-radius:10px;text-align:left;cursor:pointer;width:calc(100% + 12px);
+  transition:background-color .15s ease,transform .16s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){ .rank-row:hover{background:var(--surface-2)} }
+.rank-row:active{transform:scale(.99)}
+.rank-row .no{width:18px;text-align:center;font-weight:800;color:var(--faint);font-variant-numeric:tabular-nums;flex:none}
+.rank-row:first-child .no{color:var(--accent)}
+.rank-row .body{flex:1;min-width:0}
+.rank-row .t{font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-row .l{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-row .sc{display:flex;align-items:center;gap:6px;flex:none}
+.rank-row .sc b{font-variant-numeric:tabular-nums}
+.worst .rank-row:first-child .no{color:var(--low)}
+.worst .rank-row .sc b{color:var(--low)}
+.st-empty{color:var(--faint);font-size:13px;padding:8px 0}
+.vbars{display:flex;align-items:flex-end;gap:2px;height:120px}
+.vbar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;position:relative;cursor:default}
+.vbar i{display:block;background:var(--accent);border-radius:4px 4px 0 0;min-height:0;transition:opacity .15s ease}
+.vbar.zero i{background:var(--line);min-height:2px;border-radius:2px}
+.vbar em{position:absolute;left:0;right:0;text-align:center;font-style:normal;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.vbars:hover .vbar:not(:hover) i{opacity:.55}
+.vlabels{display:flex;gap:2px;margin-top:6px}
+.vlabels span{flex:1;text-align:center;font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hbars{display:flex;flex-direction:column;gap:8px}
+.hbar{display:grid;grid-template-columns:92px 1fr 34px;align-items:center;gap:8px;font-size:13px}
+.hbar .lab{display:flex;align-items:center;gap:6px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.hbar .lab i{width:8px;height:8px;border-radius:50%;background:var(--tc);flex:none}
+.hbar .track{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.hbar .track b{display:block;height:100%;background:var(--accent);border-radius:999px}
+.hbar .n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.tip{position:fixed;z-index:60;pointer-events:none;background:var(--text);color:var(--bg);font-size:12px;font-weight:600;padding:5px 9px;border-radius:7px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-8px}
+@media (max-width:600px){ .st-grid{grid-template-columns:1fr} .kpis{grid-template-columns:repeat(2,1fr)} .kpi .v{font-size:20px} .tabs{overflow-x:auto;scrollbar-width:none} }
+
+.detail-top{display:flex;gap:16px}
+.detail-top h2{margin:2px 0 0;font-size:22px;line-height:1.3;letter-spacing:-.01em}
+.detail-top .by{color:var(--muted);font-size:14px}
+.detail-top .score{display:flex;align-items:center;gap:8px;margin-top:10px}
+.detail-top .score b{font-size:20px;font-variant-numeric:tabular-nums}
+.detail-top .score.low b{color:var(--low)}
+.note{margin-top:14px;white-space:pre-wrap;line-height:1.75}
+.note.empty{color:var(--faint)}
+.dmeta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:13px;color:var(--muted)}
+
+.bmsg{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+.choice{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;cursor:pointer;margin-top:8px;
+  transition:border-color .15s ease,transform .16s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){ .choice:hover{border-color:var(--accent)} }
+.choice:active{transform:scale(.98)}
+.choice b{display:block;font-size:15px}
+.choice small{color:var(--muted);font-size:13px}
+
+.menu{position:absolute;right:0;top:44px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;min-width:220px;z-index:10;transform-origin:top right;
+  transition:opacity .18s var(--ease-out),transform .18s var(--ease-out),display .18s allow-discrete}
+.menu[hidden]{display:none;opacity:0;transform:scale(.96);transition-duration:.12s}
+@starting-style{.menu:not([hidden]){opacity:0;transform:scale(.96)}}
+.menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:14px;transition:background-color .15s ease,transform .16s var(--ease-out)}
+.menu button:active{transform:scale(.98)}
+@media (hover:hover) and (pointer:fine){ .menu button:hover{background:var(--surface-2)} }
+.menu hr{border:0;border-top:1px solid var(--line);margin:4px}
+.menu small{color:var(--faint)}
+.ver{padding:6px 10px 4px;font-size:12px;color:var(--faint)}
+.ver b{font-weight:700;font-variant-numeric:tabular-nums}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;
+  transition:opacity .16s ease,transform .16s var(--ease-out);pointer-events:none;z-index:50;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);transition-duration:.24s}
+.fab{position:fixed;right:max(16px,calc(50% - 344px));bottom:calc(20px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:16px;border:0;background:var(--accent);color:var(--accent-ink);font-size:28px;font-weight:500;box-shadow:var(--shadow);cursor:pointer;
+  transition:transform .16s var(--ease-out),filter .15s ease}
+.fab:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){ .fab:hover{filter:brightness(1.07)} }
+
+@media (max-width:600px){
+  .places{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-16px;margin-right:-16px;padding:0 16px}
+  .places::-webkit-scrollbar{display:none}
+  .pill{flex:none}
+  .tools #q{flex-basis:100%}
+  .tools .seg-mini{flex:1;display:flex}
+  .tools .seg-mini button{flex:1}
+}
+@media (max-width:420px){ .row{grid-template-columns:1fr} .hero{gap:14px} .hero h2{font-size:18px} .poster.lg{width:80px;height:116px} }
+@media (prefers-reduced-motion: reduce){
+  dialog,.menu{transform:none!important}
+  @starting-style{dialog[open],.menu:not([hidden]){transform:none}}
+  .toast,.toast.show{transform:translateX(-50%)}
+  .card.entering,.card.leaving{transform:none}
+  .btn:active,.card:active,.hero:active,.fab:active,.pill:active,.seg button:active,.choice:active,.menu button:active{transform:none}
+}
+
+/* ===== v1.4 목업 톤: 보랏빛 극장, 유리 카드 ===== */
+body{background:
+  radial-gradient(900px 520px at 12% -6%, color-mix(in srgb,var(--accent-2) 26%,transparent), transparent 60%),
+  radial-gradient(800px 600px at 100% 30%, color-mix(in srgb,var(--accent) 18%,transparent), transparent 60%),
+  radial-gradient(1000px 500px at 50% 110%, color-mix(in srgb,var(--accent-2) 16%,transparent), transparent 60%),
+  linear-gradient(180deg,var(--bg),var(--bg-2)) fixed; min-height:100vh}
+.wrap{position:relative;z-index:1;max-width:1040px;padding:22px 24px 120px}
+.deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:var(--deco)}
+
+
+header{align-items:center;margin:6px 0 26px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand h1{font-size:28px;font-weight:900}
+.brand h1 span{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{margin:0 0 0 8px;padding-left:16px;border-left:1px solid var(--line-2);font-size:14px}
+.head-btns{display:flex;gap:10px;align-items:center}
+.icon-btn{width:44px;height:44px;border-radius:14px;color:var(--text)}
+.btn{background:var(--surface);border-color:var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+@media (hover:hover) and (pointer:fine){ .btn:hover{background:color-mix(in srgb,var(--accent) 12%,var(--surface-solid))} }
+.btn.primary,.fab,.pill[aria-pressed="true"],.seg-mini button[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+.btn.ghost{background:transparent;backdrop-filter:none}
+
+/* hero */
+.hero{background:var(--surface);border:1px solid var(--line-2);border-radius:28px;padding:28px 32px;gap:28px;align-items:center;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.08)}
+.hero::before{display:none}
+.hero .backdrop{position:absolute;inset:0 0 0 35%;background-size:cover;background-position:center;opacity:.5;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 55%);mask:linear-gradient(90deg,transparent,#000 55%);pointer-events:none}
+.hero .info,.hero .poster{position:relative}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 35%,transparent),color-mix(in srgb,var(--accent-2) 30%,transparent));
+  color:var(--text);font-size:13px;letter-spacing:0;border:1px solid var(--line-2)}
+.hero .eyebrow svg{width:15px;height:15px}
+.hero h2{font-size:28px;font-weight:800;margin:12px 0 4px}
+.hero .by{font-size:15px}
+.hero .score{gap:10px}
+.hero .score b{font-size:24px}
+.hint-pill{font-size:12px;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:2px 9px;background:var(--surface-2)}
+.poster.lg{width:156px;height:226px;border-radius:12px;font-size:15px;padding:10px}
+.hero .poster.lg{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent),0 18px 50px var(--glow),0 0 40px var(--glow)}
+.quote{position:relative;background:color-mix(in srgb,var(--surface-solid) 70%,transparent);border:1px solid var(--line-2);border-left:1px solid var(--line-2);border-radius:14px;padding:14px 40px 14px 44px;font-size:16px}
+.quote::before,.quote::after{position:absolute;font-size:30px;font-weight:900;line-height:1;color:var(--accent);font-family:Georgia,serif}
+.quote::before{content:"\201C";left:14px;top:10px}
+.quote::after{content:"\201D";right:14px;bottom:-2px}
+
+/* summary bar */
+.stats-line{justify-content:space-around;align-items:center;gap:8px 22px;margin:16px 0 0;padding:12px 20px;background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-size:14px;color:var(--muted)}
+.stats-line span{display:inline-flex;align-items:center;gap:8px}
+.stats-line svg{width:20px;height:20px;flex:none}
+.stats-line .ico-a{color:var(--accent)} .stats-line .ico-s{color:var(--star)} .stats-line .ico-l{color:var(--low)}
+.stats-line .yr{color:var(--text);font-weight:700;padding-right:22px;border-right:1px solid var(--line-2)}
+
+/* tabs */
+.tabs{gap:8px;margin:28px 0 18px;border-bottom:1px solid var(--line)}
+.tab{display:inline-flex;align-items:center;gap:8px;font-size:17px;padding:12px 18px;border-bottom:0;position:relative}
+.tab svg{width:20px;height:20px}
+.tab em{color:inherit;font-weight:700;margin-left:2px}
+.tab[aria-selected="true"] em{color:var(--accent)}
+.tab::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  box-shadow:0 0 14px var(--glow);transform:scaleX(0);transition:transform .22s var(--ease-out)}
+.tab[aria-selected="true"]::after{transform:scaleX(1)}
+
+/* pills, tools */
+.places{gap:8px;margin-bottom:16px}
+.pill{background:var(--surface);border-color:var(--line);padding:8px 14px;font-size:14px;color:var(--text);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.pill i.dot{width:8px;height:8px;border-radius:50%;background:var(--tc)}
+.pill svg{width:16px;height:16px;color:var(--muted)}
+.pill[aria-pressed="true"] em,.pill[aria-pressed="true"] svg{color:#fff}
+.tools{gap:12px;margin-bottom:18px}
+.search{flex:1;min-width:200px;position:relative;display:flex}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;z-index:1}
+.tools .in,.tools .search .in{background:var(--surface);border-color:var(--line);border-radius:14px;padding:12px 14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.tools .search .in{padding-left:42px;width:100%}
+.tools select.in{padding-right:36px}
+.seg-mini{background:var(--surface);border-color:var(--line);padding:4px;gap:2px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.seg-mini button{border-radius:999px;padding:8px 14px;font-size:13px}
+
+/* cards */
+.list{gap:10px}
+.card{background:var(--surface);border-color:var(--line);border-radius:18px;padding:14px 22px 14px 16px;gap:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+@media (hover:hover) and (pointer:fine){ .card:hover{border-color:var(--line-2);background:color-mix(in srgb,var(--accent) 7%,var(--surface))} }
+.poster.sm{width:64px;height:92px;border-radius:8px;font-size:10px}
+.card .title{font-size:17px}
+.card .sub{font-size:14px;color:var(--text);opacity:.85}
+.card .sub.empty{color:var(--faint);opacity:1}
+.card .meta{font-size:13px;margin-top:6px}
+.card .side b{font-size:20px}
+.card .side .mark{width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--muted);background:var(--surface-2)}
+
+/* fab */
+.fab{z-index:20;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;right:max(20px,calc(50% - 500px));
+  box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 16%,transparent),0 14px 34px var(--glow)}
+
+/* sheets & menu: solid */
+.sheet,.menu{background:var(--surface-solid);border-color:var(--line-2)}
+.menu{top:52px}
+.in{background:color-mix(in srgb,var(--bg) 70%,var(--surface-solid))}
+.score-input,.choice{background:color-mix(in srgb,var(--bg) 70%,var(--surface-solid))}
+
+/* stats */
+.st-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.st-card,.kpis{background:var(--surface);border-color:var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.kpi{background:transparent}
+.kpis{gap:0}
+.kpi + .kpi{border-left:1px solid var(--line)}
+.rank-row .t,.rank-row .l{display:block}
+.rank-row .poster.sm{width:44px;height:64px;font-size:8px}
+.vbars{margin-top:18px}
+.vbar i{background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.hbar .track b{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+
+@media (max-width:760px){
+  .wrap{padding:16px 14px 110px}
+  .brand p{display:none}
+  .head-btns{gap:6px} .icon-btn{width:40px;height:40px;border-radius:12px}
+  #hSearch{display:none}
+  .hero{padding:18px;gap:16px;border-radius:22px}
+  .hero h2{font-size:20px}
+  .poster.lg{width:96px;height:140px}
+  .hero .backdrop{inset:0;opacity:.25}
+  .stats-line{border-radius:18px;justify-content:flex-start}
+  .stats-line .yr{border-right:0;padding-right:0;width:100%}
+  .tab{font-size:15px;padding:10px 10px} .tab svg{display:none}
+  .tools .search{flex-basis:100%}
+  .tools .seg-mini{flex:1 1 100%;display:flex} .tools .seg-mini button{flex:1;padding:8px 6px;white-space:nowrap}
+  .tools select.in{flex:1 1 100%}
+  .quote{font-size:14px;padding:10px 30px 10px 34px}
+  .quote::before{left:10px;top:6px;font-size:24px} .quote::after{right:10px;font-size:24px}
+  .poster.sm{width:52px;height:75px}
+  .card{padding:12px 14px 12px 12px;gap:12px}
+  .card .title{font-size:16px}
+  .kpi + .kpi{border-left:0}
+}
+@media (prefers-reduced-motion:reduce){ .tab::after{transition:none} }
+
+/* ===== 뉴게임플러스: 100점 점수 ===== */
+.sc{display:inline-grid;place-items:center;flex:none;border-radius:10px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  width:44px;height:44px;font-size:19px;color:#fff;background:var(--bc);box-shadow:0 4px 14px color-mix(in srgb,var(--bc) 35%,transparent)}
+.sc.hi{--bc:var(--hi)} .sc.mid{--bc:var(--star)} .sc.lo{--bc:var(--low)}
+.sc.mid{color:#1d1600}
+.sc.none{background:var(--surface-2);color:var(--faint);box-shadow:none;border:1px dashed var(--line-2)}
+.sc.xs{width:34px;height:34px;font-size:15px;border-radius:8px}
+.sc.lg{width:58px;height:58px;font-size:26px;border-radius:14px}
+.hero .score .sc.lg{box-shadow:0 0 0 3px color-mix(in srgb,var(--bc,transparent) 25%,transparent),0 8px 24px color-mix(in srgb,var(--bc,transparent) 40%,transparent)}
+.result{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.result.drop{color:var(--low);background:color-mix(in srgb,var(--low) 13%,transparent)}
+.rw{color:var(--hi);background:color-mix(in srgb,var(--hi) 13%,transparent)}
+.card .side{justify-content:center;min-height:44px}
+.card .side small{font-variant-numeric:tabular-nums}
+
+.score-input{display:flex;align-items:center;gap:14px;padding:12px 12px;border:1px solid var(--line);border-radius:12px}
+.sbar{position:relative;flex:1;height:28px;cursor:pointer;touch-action:none;border-radius:999px;outline:none}
+.sbar .track{position:absolute;left:0;right:0;top:50%;height:8px;margin-top:-4px;border-radius:999px;background:var(--surface-2);overflow:hidden;
+  box-shadow:inset 0 0 0 1px var(--line)}
+.sbar .fill{position:absolute;inset:0;transform-origin:left;transform:scaleX(var(--p,0));background:var(--bc,var(--accent));transition:background-color .15s ease}
+.sbar .ticks{position:absolute;left:0;right:0;top:50%;height:8px;margin-top:-4px;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),color-mix(in srgb,var(--bg) 70%,transparent) calc(10% - 1px) 10%)}
+.sbar .knob{position:absolute;top:50%;left:calc(var(--p,0) * 100%);width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 3px var(--bc,var(--accent)),0 3px 10px rgba(0,0,0,.3);transition:box-shadow .15s ease,scale .12s var(--ease-out)}
+.sbar:active .knob{scale:1.12}
+.sbar:focus-visible .knob{box-shadow:0 0 0 3px var(--bc,var(--accent)),0 0 0 7px color-mix(in srgb,var(--accent) 35%,transparent)}
+.sbar.hi{--bc:var(--hi)} .sbar.mid{--bc:var(--star)} .sbar.lo{--bc:var(--low)}
+.sval{width:62px;flex:none;text-align:center;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;padding:6px 4px!important}
+.score-input .hint{font-size:13px;color:var(--muted);width:64px;flex:none;white-space:nowrap}
+.score-presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.score-presets button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums;
+  transition:border-color .15s ease,color .15s ease,transform .16s var(--ease-out)}
+.score-presets button:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){ .score-presets button:hover{border-color:var(--accent);color:var(--text)} }
+@media (max-width:420px){ .score-input{flex-wrap:wrap} .sbar{flex-basis:100%;order:3} }
+
+/* 게임 장식: 패드 버튼 모양 */
+.glyph{position:absolute;fill:none;stroke:var(--accent);stroke-width:5;opacity:.22}
+.glyph.g1{left:-40px;top:160px;width:220px;height:220px;transform:rotate(-14deg);stroke:var(--accent-2)}
+.glyph.g2{right:-30px;top:60px;width:150px;height:150px;transform:rotate(12deg)}
+.glyph.g3{right:40px;top:520px;width:120px;height:120px;transform:rotate(-8deg);stroke:var(--accent-2)}
+.glyph.g4{left:6%;bottom:6%;width:110px;height:110px;transform:rotate(18deg)}
+@media (max-width:1180px){ .glyph.g2,.glyph.g3{display:none} }
+.hero .hours{color:var(--muted);font-size:13px;margin-left:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9a8ff"/><stop offset="1" stop-color="#6a4cf0"/></linearGradient></defs><path d="M11.5 11h17c4.3 0 7.4 3.3 8 7.6l1 7.6c.5 3.6-3.6 5.9-6.3 3.5L27 26H13l-4.2 3.7c-2.7 2.4-6.8.1-6.3-3.5l1-7.6c.6-4.3 3.7-7.6 8-7.6z" fill="url(#lg1)"/><path d="M12 16.5v6M9 19.5h6" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/><circle cx="27.5" cy="17" r="1.8" fill="#fff"/><circle cx="31" cy="20.5" r="1.8" fill="#fff" opacity=".8"/><path d="M20 4.5v4.2M17.9 6.6h4.2" stroke="#a996ff" stroke-width="2" stroke-linecap="round"/></svg>
+      <h1>뉴게임<span>플러스</span></h1>
+      <p>깬 게임은 점수와 한 줄로, 할 게임은 잊기 전에</p>
+    </div>
+    <div class="head-btns">
+      <button class="btn icon-btn" id="hSearch" aria-label="검색"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button>
+      <button class="btn icon-btn" id="hStats" aria-label="통계"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20V12M10 20V7M15 20v-9M20 20V4"/></svg></button>
+      <button class="btn icon-btn" id="hTheme" aria-label="테마 바꾸기"></button>
+      <div style="position:relative">
+      <button class="btn icon-btn" id="menuBtn" aria-label="메뉴" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg></button>
+      <div class="menu" id="menu" hidden>
+        <button data-act="sync">기기 간 동기화 <small id="syncBadge"></small></button>
+        <button data-act="daylog">데이로그 언젠가 가져오기</button>
+        <hr>
+        <button data-act="rawg">표지 설정 (RAWG 키) <small id="rawgBadge"></small></button>
+        <button data-act="fillposters">표지 한 번에 찾기</button>
+        <hr>
+        <button data-act="export">백업 파일 내보내기</button>
+        <button data-act="import">백업 파일 가져오기</button>
+        <hr>
+        <button data-act="theme">테마 <small id="themeLabel"></small></button>
+        <hr>
+        <div class="ver">뉴게임플러스 <b class="appVer"></b></div>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+    </div>
+  </header>
+
+  <div id="heroWrap"></div>
+  <div class="stats-line" id="statsLine"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-v="seen" aria-selected="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>한 게임<em id="cntSeen">0</em></button>
+    <button class="tab" role="tab" data-v="watching" aria-selected="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7.5 7h9c2.3 0 3.9 1.8 4.2 4l.6 4.3c.3 2-2 3.2-3.4 1.9L15.5 15h-7l-2.4 2.2c-1.4 1.3-3.7.1-3.4-1.9l.6-4.3c.3-2.2 1.9-4 4.2-4z"/><path d="M8 10v3M6.5 11.5h3"/></svg>하는 중<em id="cntWatching">0</em></button>
+    <button class="tab" role="tab" data-v="want" aria-selected="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>할 게임<em id="cntWant">0</em></button>
+    <button class="tab" role="tab" data-v="stats" aria-selected="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20V12M10 20V7M15 20v-9M20 20V4"/></svg>통계</button>
+  </div>
+
+  <div id="listView">
+  <div class="places" id="places" role="group" aria-label="기기"></div>
+
+  <div class="tools">
+    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><input class="in" id="q" type="search" placeholder="제목·한줄평 검색" autocomplete="off"></label>
+    <div class="seg-mini" id="resFilter" role="group" aria-label="결말">
+      <button data-r="all" aria-pressed="true">전체</button>
+      <button data-r="clear" aria-pressed="false">엔딩 봄</button>
+      <button data-r="drop" aria-pressed="false">접음</button>
+    </div>
+    <div class="seg-mini" id="rateFilter" role="group" aria-label="점수">
+      <button data-f="all" aria-pressed="true">전체</button>
+      <button data-f="good" aria-pressed="false">80점+</button>
+      <button data-f="bad" aria-pressed="false">40점 이하</button>
+    </div>
+    <select class="in" id="sort" aria-label="정렬">
+      <option value="date">최근 순</option>
+      <option value="high">점수 높은 순</option>
+      <option value="low">점수 낮은 순</option>
+      <option value="hours">플레이 시간 순</option>
+      <option value="title">제목 순</option>
+    </select>
+  </div>
+
+  <div class="list" id="list"></div>
+  <div class="empty-box" id="empty" hidden></div>
+  </div>
+  <div id="statsView" hidden></div>
+  <p class="credit"><b class="appVer"></b> · 게임 정보와 배경: <a href="https://rawg.io" target="_blank" rel="noopener" style="color:inherit">RAWG</a> · 세로 표지: Steam</p>
+</div>
+
+<button class="fab" id="addBtn" aria-label="기록하기"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<div class="deco" aria-hidden="true">
+  <svg class="glyph g1" viewBox="0 0 100 100"><path d="M50 10 92 84H8z" stroke-linejoin="round"/></svg>
+  <svg class="glyph g2" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>
+  <svg class="glyph g3" viewBox="0 0 100 100"><path d="M18 18 82 82M82 18 18 82" stroke-linecap="round"/></svg>
+  <svg class="glyph g4" viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72" rx="6"/></svg>
+</div>
+
+<!-- 기록/수정 -->
+<dialog id="editDlg">
+  <form class="sheet" id="form" method="dialog" novalidate>
+    <div class="sheet-hd"><h3 id="formTitle">기록하기</h3></div>
+    <div class="sheet-bd">
+      <div class="row">
+        <label class="f"><span>제목</span><input class="in" id="fTitle" maxlength="120" placeholder="게임 제목 (영문이면 표지가 잘 찾아져요)"></label>
+        <label class="f"><span>출시연도 (선택)</span><input class="in" id="fYear" inputmode="numeric" maxlength="4" placeholder="예: 2023"></label>
+      </div>
+      <div id="pickWrap"><div class="picks" id="picks" role="group" aria-label="표지 고르기"></div><div class="pickmsg" id="pickMsg"></div></div>
+      <label class="f memo-f"><span id="lblMemo">메모 (선택)</span><input class="in" id="fMemo" maxlength="200" placeholder="왜 하고 싶은지, 누가 추천했는지"></label>
+      <div class="f seen-only"><span class="flabel" id="lblRes">결말</span>
+        <div class="seg" id="fRes" role="group" aria-labelledby="lblRes">
+          <button type="button" data-r="clear" aria-pressed="true">엔딩 봤어요</button>
+          <button type="button" data-r="drop" aria-pressed="false">접었어요</button>
+        </div>
+      </div>
+      <div class="f seen-only">
+        <span class="flabel" id="lblScore">점수 <small style="font-weight:500;color:var(--faint)">100점 만점</small></span>
+        <div class="score-input">
+          <div class="sbar" id="scoreIn" role="slider" tabindex="0" aria-labelledby="lblScore" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="track"><div class="fill"></div></div><div class="ticks"></div><div class="knob"></div></div>
+          <input class="in sval" id="scoreVal" inputmode="numeric" maxlength="3" placeholder="–" aria-label="점수 직접 입력">
+          <div class="hint" id="scoreHint">밀어서 매기기</div>
+        </div>
+        <div class="score-presets" id="presets"></div>
+      </div>
+      <label class="f seen-only"><span>한줄평</span><input class="in" id="fLine" maxlength="140" placeholder="한 문장으로 남긴다면"></label>
+      <label class="f seen-only"><span>감상</span><textarea class="in" id="fNote" placeholder="자유롭게"></textarea></label>
+      <div class="row">
+        <label class="f date-f"><span id="lblDate">엔딩 본 날</span><input class="in" id="fDate" type="date"></label>
+        <label class="f hours-f"><span id="lblHours">플레이 시간 (선택)</span><input class="in" id="fHours" inputmode="decimal" maxlength="6" placeholder="시간, 예: 62"></label>
+      </div>
+      <div class="f"><span class="flabel" id="lblWhere">기기</span>
+        <div class="seg" id="fWhere" role="group" aria-labelledby="lblWhere"></div>
+      </div>
+      <div class="f seen-only clear-only">
+        <span class="flabel">다시 깬 날 <small style="font-weight:500;color:var(--faint)">2회차 이상 (뉴게임+)</small></span>
+        <div class="rwlist" id="rwList"></div>
+        <div class="rwadd"><input class="in" id="rwDate" type="date" aria-label="다시 깬 날"><button type="button" class="btn sm" id="rwAddBtn">추가</button></div>
+      </div>
+    </div>
+    <div class="sheet-ft">
+      <button type="button" class="btn ghost danger sm" id="btnDel" hidden>삭제</button>
+      <div class="right">
+        <button type="button" class="btn" data-close>취소</button>
+        <button type="submit" class="btn primary" value="save">저장</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- 상세 -->
+<dialog id="detailDlg">
+  <div class="sheet">
+    <div class="sheet-bd" style="padding-top:18px">
+      <div class="detail-top">
+        <div id="dPoster"></div>
+        <div style="flex:1;min-width:0">
+          <h2 id="dTitle"></h2>
+          <div class="by" id="dYear"></div>
+          <div class="score" id="dScore"></div>
+        </div>
+      </div>
+      <div class="quote" id="dLine"></div>
+      <div class="note" id="dNote"></div>
+      <div class="dmeta" id="dMeta"></div>
+    </div>
+    <div class="sheet-ft">
+      <div class="right">
+        <button type="button" class="btn" data-close>닫기</button>
+        <button type="button" class="btn" id="btnEdit">수정</button>
+        <button type="button" class="btn" id="btnStart" hidden>하기 시작</button>
+        <button type="button" class="btn" id="btnAgain" hidden>또 깼어요</button>
+        <button type="button" class="btn primary" id="btnSeen" hidden>다 했어요</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- 추가 링크 -->
+<dialog id="addDlg">
+  <div class="sheet">
+    <div class="sheet-hd"><h3 id="addTitle">기록 추가</h3></div>
+    <div class="sheet-bd"><p class="bmsg" style="margin-top:0">링크에 담긴 기록이에요. 이미 있는 기록(같은 제목·같은 날짜)은 건너뛰어요.</p><div class="rank" id="addList"></div></div>
+    <div class="sheet-ft"><div class="right"><button type="button" class="btn" data-close>취소</button><button type="button" class="btn primary" id="addGo">추가</button></div></div>
+  </div>
+</dialog>
+
+<!-- RAWG 키 -->
+<dialog id="rawgDlg">
+  <form class="sheet" id="rawgForm" method="dialog" novalidate>
+    <div class="sheet-hd"><h3>표지 설정</h3></div>
+    <div class="sheet-bd">
+      <p style="margin:4px 0 0;line-height:1.6;color:var(--muted);font-size:14px">RAWG에서 제목으로 게임을 찾아 표지와 배경을 붙여요. 스팀에 있는 게임은 세로 표지를, 없으면 RAWG 대표 이미지를 써요. 기기마다 처음 한 번만 키를 넣으면 돼요.</p>
+      <ol style="margin:12px 0 0;padding-left:20px;font-size:14px;line-height:1.7">
+        <li><a href="https://rawg.io/apidocs" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">RAWG API 페이지 열기 ↗</a> → <b>Get API Key</b> (무료 가입)</li>
+        <li>발급된 <b>API 키</b>(32자리)를 복사</li>
+        <li>아래에 붙여넣고 <b>저장</b></li>
+      </ol>
+      <label class="f"><span>RAWG API 키</span><input class="in" id="rawgKey" autocomplete="off" spellcheck="false" placeholder="32자리 키"></label>
+      <p class="bmsg" id="rawgMsg">키는 이 기기의 브라우저에만 저장돼요.</p>
+    </div>
+    <div class="sheet-ft">
+      <button type="button" class="btn ghost danger sm" id="rawgOff" hidden>키 지우기</button>
+      <div class="right"><button type="button" class="btn" data-close>닫기</button><button type="submit" class="btn primary" id="rawgSave">저장</button></div>
+    </div>
+  </form>
+</dialog>
+
+<!-- 동기화 -->
+<dialog id="syncDlg">
+  <div class="sheet">
+    <div class="sheet-hd"><h3>기기 간 동기화</h3></div>
+    <div class="sheet-bd" id="syncBody"></div>
+    <div class="sheet-ft" id="syncFoot"></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(_){ return null; } };
+const lsSet = (k,v) => { try{ localStorage.setItem(k,v); return true; }catch(_){ return false; } };
+const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- 상수 ---------- */
+const APP_VERSION = 'v1.0'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 */
+const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
+/* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
+const PLACES = [['PS','#3E7DD6'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
+const placeColor = p => (PLACES.find(x => x[0] === p) || [,'#868f97'])[1];
+const POSTER = ['#3b5b92','#5b4b8a','#2f6f6a','#8a3b4b','#44546a','#6a4b8a','#2d6a8a','#7a4a6a','#35606f','#5a5f8a'];
+const posterColor = t => { let h = 0; for (const c of t) h = (h*31 + c.charCodeAt(0)) >>> 0; return POSTER[h % POSTER.length]; };
+/* 점수 구간 — 메타크리틱처럼 75+ 초록, 50~74 노랑, 49 이하 빨강 */
+const band = v => !v ? 'none' : v >= 75 ? 'hi' : v >= 50 ? 'mid' : 'lo';
+const hintOf = v => !v ? '점수 없음' : v < 20 ? '최악' : v < 40 ? '시간 낭비' : v < 50 ? '별로' : v < 60 ? '그럭저럭' : v < 70 ? '할 만함' : v < 80 ? '괜찮음' : v < 90 ? '훌륭함' : v < 95 ? '걸작' : '인생 게임';
+const RESULT = { clear: '엔딩 봄', drop: '접음' };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const dot = s => s ? s.replace(/-/g,'.') : '';
+const statusOf = e => e.status === 'want' || e.status === 'watching' ? e.status : 'seen';
+const hrs = h => h ? (Math.round(h*10)/10).toLocaleString('ko-KR') + '시간' : '';
+const SVG = (d, extra = '') => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${extra}>${d}</svg>`;
+const IC = {
+  cal: SVG('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>'),
+  flag: SVG('<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>'),
+  pad: SVG('<path d="M7.5 7h9c2.3 0 3.9 1.8 4.2 4l.6 4.3c.3 2-2 3.2-3.4 1.9L15.5 15h-7l-2.4 2.2c-1.4 1.3-3.7.1-3.4-1.9l.6-4.3c.3-2.2 1.9-4 4.2-4z"/><path d="M8 10v3M6.5 11.5h3"/>'),
+  star: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>',
+  clock: SVG('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
+  mark: SVG('<path d="M6 4h12v16l-6-4-6 4z"/>'),
+  sun: SVG('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>'),
+  moon: SVG('<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>')
+};
+const isDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
+/* 깬 날짜 전부 (처음 + 다시 깬 날) — 통계·최근 순 정렬이 이걸 쓴다 */
+const viewDates = e => [e.date, ...(e.rewatches || [])].filter(isDate);
+const lastDate = e => viewDates(e).sort().pop() || '';
+
+/* ---------- 상태 ---------- */
+let state = { entries: [], deleted: {}, savedAt: 0 };
+const BG_RE = /^https:\/\/media\.rawg\.io\/media\/[\w\/.\-]+$/;
+function normEntry(raw){
+  if (!raw || !raw.title) return null;
+  const status = raw.status === 'want' || raw.status === 'watching' ? raw.status : 'seen';
+  return {
+    id: String(raw.id || uid()), title: String(raw.title).slice(0,120), year: String(raw.year || '').replace(/\D/g,'').slice(0,4),
+    status, result: raw.result === 'drop' ? 'drop' : 'clear',
+    rewatches: Array.isArray(raw.rewatches) ? [...new Set(raw.rewatches.filter(isDate))].sort().slice(0,50) : [],
+    rating: Math.max(0, Math.min(100, Math.round(+raw.rating || 0))),
+    hours: Math.max(0, Math.min(99999, Math.round((+raw.hours || 0)*10)/10)),
+    line: String(raw.line || ''), note: String(raw.note || ''), memo: String(raw.memo || ''),
+    date: String(raw.date || ''), where: PLACES.some(p => p[0] === raw.where) ? raw.where : '',
+    rawgId: +raw.rawgId || 0, steam: +raw.steam || 0, bg: BG_RE.test(raw.bg || '') ? raw.bg : '',
+    createdAt: +raw.createdAt || Date.now(), updatedAt: +raw.updatedAt || Date.now()
+  };
+}
+function migrate(s){
+  if (Array.isArray(s)) s = { entries: s };
+  s = s && typeof s === 'object' ? s : {};
+  return { entries: (s.entries || []).map(normEntry).filter(Boolean), deleted: s.deleted || {}, dlSeen: s.dlSeen || {}, savedAt: +s.savedAt || 0 };
+}
+function load(){ try { state = migrate(JSON.parse(lsGet(KEY) || 'null')); } catch(_){ state = migrate(null); } }
+function save(){
+  state.savedAt = Date.now();
+  if (!lsSet(KEY, JSON.stringify(state))) toast('이 브라우저에 저장이 안 돼요. 백업 파일로 챙겨 두세요');
+  schedulePush();
+}
+
+/* ---------- 점수 배지 · 표지 ---------- */
+function makeScore(v, size = ''){
+  const s = document.createElement('span'); s.className = `sc ${size} ${band(v)}`;
+  s.textContent = v ? v : '–'; s.setAttribute('aria-label', v ? `${v}점` : '점수 없음');
+  return s;
+}
+const rawgImg = (url, w) => url.replace('/media/', `/media/resize/${w}/-/`);
+const STEAM = id => [`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900.jpg`, `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_600x900.jpg`];
+/* 스팀 세로 표지 → 없으면 RAWG 대표 이미지 → 그것도 없으면 제목 카드 */
+function coverSrcs(e, w){ return [...(e.steam ? STEAM(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, w)] : [])]; }
+function chainImg(img, srcs, onFail){
+  let i = 0; img.src = srcs[0];
+  img.onerror = () => { i++; if (i < srcs.length) img.src = srcs[i]; else onFail(); };
+}
+function makePoster(e, size){
+  const p = document.createElement('div'); p.className = 'poster ' + size;
+  p.style.setProperty('--pc', posterColor(e.title));
+  const s = document.createElement('span'); s.textContent = e.title; p.append(s);
+  const srcs = coverSrcs(e, size === 'lg' ? 640 : 420);
+  if (srcs.length){
+    const img = new Image(); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+    chainImg(img, srcs, () => { img.remove(); p.classList.remove('has-img'); });
+    p.append(img); p.classList.add('has-img');
+  }
+  return p;
+}
+
+/* ---------- RAWG 표지 ----------
+   키는 이 기기 브라우저에만 둔다. 기록에는 RAWG 번호·스팀 번호·이미지 주소만 남겨서 동기화된다. */
+const RAWG_KEY = 'newgameplus.rawg';
+const rawgKey = () => (lsGet(RAWG_KEY) || '').trim();
+const normT = s => String(s || '').replace(/[\s:·.,!?'"\-–—™®()]/g, '').toLowerCase();
+const hasHangul = s => /[가-힣]/.test(s);
+async function rawg(path, params, key = rawgKey()){
+  const u = new URL('https://api.rawg.io/api' + path);
+  u.searchParams.set('key', key);
+  Object.entries(params || {}).forEach(([k, v]) => { if (v !== '' && v != null) u.searchParams.set(k, v); });
+  const r = await fetch(u, { headers: { accept: 'application/json' } });
+  if (r.status === 401 || r.status === 403) throw new Error('key'); if (!r.ok) throw new Error('http');
+  return r.json();
+}
+async function searchGames(q, year){
+  const base = { search: q, page_size: 10, search_precise: 'true' };
+  let res = (await rawg('/games', { ...base, dates: year ? `${year}-01-01,${year}-12-31` : '' })).results || [];
+  if (!res.length && year) res = (await rawg('/games', base)).results || [];
+  return res.slice(0, 10).map(m => ({ id: m.id, title: m.name || '', year: (m.released || '').slice(0, 4), bg: BG_RE.test(m.background_image || '') ? m.background_image : '', steam: 0 }));
+}
+async function steamOf(id){
+  try {
+    const d = await rawg(`/games/${id}/stores`, {});
+    for (const s of d.results || []){ const m = s.store_id === 1 && /\/app\/(\d+)/.exec(s.url || ''); if (m) return +m[1]; }
+  } catch(_){}
+  return 0;
+}
+const pickKey = m => m ? 'rawg:' + m.id : '';
+function bestMatch(e, list){
+  const t = normT(e.title);
+  const same = list.filter(m => m.bg && normT(m.title) === t);
+  if (!same.length) return null;
+  return (e.year && same.find(m => m.year === e.year)) || (same.length === 1 ? same[0] : null);
+}
+let filling = false; const triedPoster = new Set();
+async function fillPosters(quiet = true){
+  if (!rawgKey()){ if (!quiet) openRawg(); return; }
+  if (filling) return; filling = true;
+  const targets = state.entries.filter(e => !e.bg && !e.steam && (!quiet || !triedPoster.has(e.id)));
+  let got = 0, miss = 0;
+  try {
+    for (const e of targets){
+      triedPoster.add(e.id);
+      const m = bestMatch(e, await searchGames(e.title, e.year));
+      if (m){ e.rawgId = m.id; e.bg = m.bg; e.steam = await steamOf(m.id); if (!e.year && m.year) e.year = m.year; e.updatedAt = Date.now(); got++; } else miss++;
+    }
+  } catch(err){
+    if (!quiet) toast(err.message === 'key' ? 'RAWG 키가 맞지 않아요. 표지 설정을 확인해 주세요' : '표지를 찾지 못했어요. 잠시 후 다시 해주세요');
+    filling = false; if (got){ save(); render(); } return;
+  }
+  filling = false;
+  if (got){ save(); render(); }
+  if (got || !quiet) toast(!targets.length ? '표지가 비어 있는 기록이 없어요'
+    : `표지 ${got}개를 붙였어요` + (miss ? ` · ${miss}개는 수정에서 직접 골라 주세요` : ''));
+}
+function renderRawgBadge(){ $('#rawgBadge').textContent = rawgKey() ? '· 켜짐' : '· 꺼짐'; }
+function openRawg(){
+  const has = !!rawgKey();
+  $('#rawgKey').value = ''; $('#rawgKey').placeholder = has ? '저장된 키가 있어요 · 바꾸려면 새 키를 붙여넣기' : '32자리 키';
+  $('#rawgMsg').textContent = '키는 이 기기의 브라우저에만 저장돼요.';
+  $('#rawgOff').hidden = !has;
+  $('#rawgDlg').showModal();
+}
+
+/* ---------- 화면 상태 ---------- */
+let view = 'seen', place = 'all', rateF = 'all', resF = 'all', sort = 'date', query = '';
+let statYear = String(new Date().getFullYear());
+
+function visible(){
+  const q = query.trim().toLowerCase();
+  const arr = state.entries.filter(e => {
+    if (statusOf(e) !== view) return false;
+    if (q && ![e.title, e.line, e.memo].some(s => (s||'').toLowerCase().includes(q))) return false;
+    if (view !== 'seen') return true;
+    if (place !== 'all' && e.where !== place) return false;
+    if (resF !== 'all' && e.result !== resF) return false;
+    if (rateF === 'good' && e.rating < 80) return false;
+    if (rateF === 'bad' && (!e.rating || e.rating > 40)) return false;
+    return true;
+  });
+  if (view === 'want') return arr.sort((a,b) => b.createdAt - a.createdAt);
+  if (view === 'watching') return arr.sort((a,b) => b.updatedAt - a.updatedAt);
+  const byDate = (a,b) => lastDate(b).localeCompare(lastDate(a)) || b.createdAt - a.createdAt;
+  if (sort === 'date') arr.sort(byDate);
+  if (sort === 'high') arr.sort((a,b) => b.rating - a.rating || byDate(a,b));
+  if (sort === 'low') arr.sort((a,b) => (a.rating || 101) - (b.rating || 101) || byDate(a,b));
+  if (sort === 'hours') arr.sort((a,b) => b.hours - a.hours || byDate(a,b));
+  if (sort === 'title') arr.sort((a,b) => a.title.localeCompare(b.title, 'ko'));
+  return arr;
+}
+
+/* ---------- 히어로 · 요약 ---------- */
+function renderHero(){
+  const wrap = $('#heroWrap'); wrap.textContent = '';
+  const seen = state.entries.filter(e => statusOf(e) === 'seen');
+  const wants = state.entries.filter(e => statusOf(e) === 'want');
+  const hero = document.createElement('div'); hero.className = 'hero';
+  if (!seen.length){
+    hero.classList.add('empty');
+    hero.innerHTML = `<div class="info"><div class="eyebrow">${IC.pad}첫 세이브</div><h2>아직 저장된 게임이 없어요</h2>
+      <p class="muted">방금 엔딩 본 게임, 아니면 중간에 접은 게임부터 남겨 보세요. 좋았든 별로였든 다 괜찮아요.</p>
+      <div class="actions"><button class="btn primary" id="heroAdd">기록하기</button>${wants.length?'':'<button class="btn ghost" id="heroWant">할 게임 담기</button>'}</div></div>`;
+    wrap.append(hero);
+    $('#heroAdd').onclick = () => openForm(null, 'seen');
+    const hw = $('#heroWant'); if (hw) hw.onclick = () => openForm(null, 'want');
+    return;
+  }
+  const e = [...seen].sort((a,b) => lastDate(b).localeCompare(lastDate(a)) || b.createdAt - a.createdAt)[0];
+  if (e.bg){ const bdEl = document.createElement('div'); bdEl.className = 'backdrop'; bdEl.style.backgroundImage = `url(${rawgImg(e.bg, 1280)})`; hero.append(bdEl); }
+  hero.append(makePoster(e, 'lg'));
+  const info = document.createElement('div'); info.className = 'info';
+  info.innerHTML = `<div class="eyebrow">${IC.flag}${e.result === 'drop' ? '최근 접은 게임' : '최근 엔딩 본 게임'}</div><h2></h2><div class="by"></div><div class="score"></div>`;
+  info.querySelector('h2').textContent = e.title;
+  info.querySelector('.by').textContent = [e.year, e.where, lastDate(e) && dot(lastDate(e)) + (e.result === 'drop' ? ' 접음' : ' 클리어'), hrs(e.hours), e.rewatches.length && `${e.rewatches.length + 1}회차`].filter(Boolean).join(' · ');
+  const sc = info.querySelector('.score'); sc.append(makeScore(e.rating, 'lg'));
+  const hint = document.createElement('span'); hint.className = 'hint-pill'; hint.textContent = hintOf(e.rating); sc.append(hint);
+  if (e.line){ const q = document.createElement('div'); q.className = 'quote'; q.textContent = e.line; info.append(q); }
+  hero.append(info);
+  hero.tabIndex = 0; hero.setAttribute('role','button'); hero.setAttribute('aria-label', `최근 한 게임 ${e.title} 자세히 보기`);
+  hero.onclick = () => openDetail(e.id);
+  hero.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); openDetail(e.id); } };
+  wrap.append(hero);
+}
+function renderStats(){
+  const seen = state.entries.filter(e => statusOf(e) === 'seen');
+  const wants = state.entries.filter(e => statusOf(e) === 'want').length;
+  const watching = state.entries.filter(e => statusOf(e) === 'watching').length;
+  $('#cntSeen').textContent = seen.length; $('#cntWant').textContent = wants; $('#cntWatching').textContent = watching;
+  const y = String(new Date().getFullYear());
+  const yc = seen.filter(e => e.result === 'clear' && viewDates(e).some(d => d.startsWith(y))).length;
+  const rated = seen.filter(e => e.rating > 0);
+  const avg = rated.length ? Math.round(rated.reduce((s,e) => s + e.rating, 0) / rated.length) : '–';
+  const hours = state.entries.reduce((s, e) => s + (statusOf(e) === 'want' ? 0 : e.hours), 0);
+  $('#statsLine').innerHTML = `<span class="yr"><span class="ico-a">${IC.cal}</span>${y}년 기록</span><span><span class="ico-a">${IC.flag}</span><span>엔딩 <b>${yc}</b>개</span></span>`
+    + `<span><span class="ico-a">${IC.pad}</span><span>전체 <b>${seen.length}</b>개</span></span><span><span class="ico-s">${IC.star}</span><span>평균 <b>${avg}</b>점</span></span><span><span class="ico-a">${IC.clock}</span><span>플레이 <b>${Math.round(hours).toLocaleString('ko-KR')}</b>시간</span></span>`;
+  const all = [['all'], ...PLACES];
+  $('#places').innerHTML = all.map(([k, c]) => `<button class="pill" data-p="${k}" aria-pressed="${k === place}">${k === 'all' ? '' : `<i class="dot" style="--tc:${c}"></i>`}${k === 'all' ? '전체' : k} <em>${k === 'all' ? seen.length : seen.filter(e => e.where === k).length}</em></button>`).join('');
+}
+
+/* ---------- 목록 (노드 재사용 + FLIP) ---------- */
+const listEl = $('#list');
+const nodes = new Map();
+function buildCard(){
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
+  b.innerHTML = '<div class="pslot"></div><div class="body"><div class="title"></div><div class="sub"></div><div class="meta"></div></div><div class="side"></div>';
+  b.addEventListener('click', () => openDetail(b.dataset.id));
+  return b;
+}
+function fillCard(n, e){
+  n.dataset.id = e.id;
+  const st = statusOf(e), want = st === 'want', watching = st === 'watching';
+  const ps = n.querySelector('.pslot');
+  const sig = [e.title, e.steam, e.bg].join('|');
+  if (ps.dataset.sig !== sig){ ps.replaceChildren(makePoster(e, 'sm')); ps.dataset.sig = sig; }
+  const t = n.querySelector('.title'); t.textContent = e.title;
+  if (e.year){ const y = document.createElement('span'); y.className = 'yr'; y.textContent = e.year; t.append(y); }
+  if (st === 'seen' && e.result === 'drop'){ const r = document.createElement('span'); r.className = 'result drop'; r.textContent = '접음'; t.append(r); }
+  if (st === 'seen' && e.rewatches.length){ const r = document.createElement('span'); r.className = 'rw'; r.textContent = `${e.rewatches.length + 1}회차`; t.append(r); }
+  const sub = n.querySelector('.sub'); const txt = st === 'seen' ? e.line : e.memo;
+  sub.textContent = txt || (want ? '메모 없음' : watching ? '어디까지 했는지 적어 두세요' : '한줄평 없음'); sub.classList.toggle('empty', !txt);
+  const m = n.querySelector('.meta'); m.textContent = '';
+  if (e.where){ const tg = document.createElement('span'); tg.className = 'tag'; tg.style.setProperty('--tc', placeColor(e.where)); tg.innerHTML = '<i></i>'; tg.append(want ? `${e.where}로 할 예정` : e.where); m.append(tg); }
+  const d = document.createElement('span'); d.textContent = want ? '담은 날 ' + dot(new Date(e.createdAt - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)) : watching ? (e.date ? dot(e.date) + ' 시작' : '') : dot(lastDate(e)); if (d.textContent) m.append(d);
+  if (!want && e.hours){ const h = document.createElement('span'); h.textContent = hrs(e.hours); m.append(h); }
+  const side = n.querySelector('.side'); side.textContent = '';
+  if (watching){ const w = document.createElement('span'); w.className = 'watching'; w.textContent = '하는 중'; side.append(w); }
+  else if (want){ const mk = document.createElement('span'); mk.className = 'mark'; mk.innerHTML = IC.mark; side.append(mk); }
+  else side.append(makeScore(e.rating));
+  n.setAttribute('aria-label', want ? `${e.title}, 할 게임` : watching ? `${e.title}, 하는 중` : `${e.title}, ${RESULT[e.result]}, ${e.rating ? e.rating + '점' : '점수 없음'}`);
+}
+function renderList(){
+  const arr = visible();
+  const ids = new Set(arr.map(e => e.id));
+  const first = new Map();
+  nodes.forEach((n, id) => { if (n.isConnected) first.set(id, n.getBoundingClientRect().top); });
+  nodes.forEach((n, id) => { if (!ids.has(id)){ n.remove(); if (!state.entries.some(e => e.id === id)) nodes.delete(id); } });
+  const fresh = []; let prev = null;
+  arr.forEach(e => {
+    let n = nodes.get(e.id); if (!n){ n = buildCard(); nodes.set(e.id, n); }
+    fillCard(n, e);
+    const ref = prev ? prev.nextSibling : listEl.firstChild;
+    if (ref !== n) listEl.insertBefore(n, ref);
+    if (!first.has(e.id)) fresh.push(n);
+    prev = n;
+  });
+  if (!reduce){
+    const moved = [];
+    nodes.forEach((n, id) => {
+      if (!first.has(id) || !n.isConnected) return;
+      const dy = first.get(id) - n.getBoundingClientRect().top; if (!dy) return;
+      n.style.transition = 'none'; n.style.transform = `translateY(${dy}px)`; moved.push(n);
+    });
+    if (moved.length){
+      listEl.offsetHeight;
+      moved.forEach(n => {
+        n.style.transition = 'transform 260ms var(--ease-in-out)'; n.style.transform = '';
+        n.addEventListener('transitionend', () => { n.style.transition = ''; }, {once:true});
+      });
+    }
+    fresh.forEach((n, i) => {
+      n.classList.add('entering'); n.style.transitionDelay = Math.min(i, 8) * 35 + 'ms';
+      requestAnimationFrame(() => requestAnimationFrame(() => { n.classList.remove('entering'); setTimeout(() => { n.style.transitionDelay = ''; }, 500); }));
+    });
+  }
+  const inView = state.entries.some(e => statusOf(e) === view);
+  const em = $('#empty'); em.hidden = arr.length > 0;
+  em.innerHTML = inView ? '<b>조건에 맞는 게임이 없어요</b>탭이나 검색어를 바꿔 보세요.'
+    : view === 'want' ? '<b>할 게임이 비어 있어요</b>해 보고 싶은 게임을 + 버튼으로 담아 두세요.'
+    : view === 'watching' ? '<b>하는 중인 게임이 없어요</b>게임을 시작하면 + 버튼으로 담아 두세요.'
+    : '<b>한 게임이 아직 없어요</b>+ 버튼으로 첫 기록을 남겨 보세요.';
+}
+function render(){ renderHero(); renderStats(); if (view === 'stats') renderStatsView(); else renderList(); }
+
+/* ---------- 통계 탭 ---------- */
+const tipEl = $('#tip');
+function showTip(el, text){ const r = el.getBoundingClientRect(); tipEl.textContent = text; tipEl.style.left = (r.left + r.width / 2) + 'px'; tipEl.style.top = r.top + 'px'; tipEl.hidden = false; }
+function hideTip(){ tipEl.hidden = true; }
+function vbars(values, labels, tipFn){
+  const max = Math.max(1, ...values), top = Math.max(...values);
+  const bars = values.map((v, i) => {
+    const h = v ? Math.max(4, v / max * 100) : 0;
+    const lab = v && v === top ? `<em style="bottom:calc(${h}% + 4px)">${v}</em>` : '';
+    return `<div class="vbar${v ? '' : ' zero'}" data-tip="${esc(tipFn(i, v))}" aria-label="${esc(tipFn(i, v))}">${lab}<i style="height:${h}%"></i></div>`;
+  }).join('');
+  return `<div class="vbars">${bars}</div><div class="vlabels">${labels.map(l => `<span>${l}</span>`).join('')}</div>`;
+}
+function hbars(rows){
+  const max = Math.max(1, ...rows.map(r => r.n));
+  return `<div class="hbars">${rows.map(r => `<div class="hbar" data-tip="${esc(r.label)} ${r.shown || r.n}${r.unit || '개'}"><span class="lab"><i style="--tc:${r.color || 'var(--faint)'}"></i>${esc(r.label)}</span><span class="track"><b style="width:${r.n / max * 100}%"></b></span><span class="n">${r.shown || r.n}</span></div>`).join('')}</div>`;
+}
+function rankRows(list, worst){
+  if (!list.length) return `<div class="st-empty">${worst ? '50점 이하로 남긴 게임이 아직 없어요' : '60점 이상 준 게임이 아직 없어요'}</div>`;
+  return `<div class="rank${worst ? ' worst' : ''}">` + list.map((e, i) => `<button type="button" class="rank-row" data-open="${e.id}"><span class="no">${i + 1}</span><span class="pslot" data-poster="${e.id}"></span><span class="body"><span class="t">${esc(e.title)}</span><span class="l">${esc(e.line || [e.year, e.where, e.result === 'drop' && '접음'].filter(Boolean).join(' · ') || '한줄평 없음')}</span></span><span class="sc-slot" data-score="${e.rating}"></span></button>`).join('') + `</div>`;
+}
+function renderStatsView(){
+  const box = $('#statsView');
+  const seenAll = state.entries.filter(e => statusOf(e) === 'seen');
+  const years = [...new Set(seenAll.flatMap(e => viewDates(e).map(d => d.slice(0, 4))))].sort().reverse();
+  const cy = String(new Date().getFullYear());
+  if (!years.includes(cy)) years.unshift(cy);
+  if (statYear !== 'all' && !years.includes(statYear)) statYear = cy;
+  const inYear = d => statYear === 'all' || d.startsWith(statYear);
+  const views = seenAll.flatMap(e => viewDates(e).filter(inYear).map(d => ({ e, d })));
+  const ents = statYear === 'all' ? seenAll : seenAll.filter(e => viewDates(e).some(inYear));
+  const rated = ents.filter(e => e.rating > 0);
+  const avg = rated.length ? Math.round(rated.reduce((a, e) => a + e.rating, 0) / rated.length) : '–';
+  const cleared = ents.filter(e => e.result === 'clear');
+  const replayed = cleared.filter(e => e.rewatches.length);
+  const hoursSum = ents.reduce((a, e) => a + e.hours, 0);
+  const yLabel = statYear === 'all' ? '역대' : statYear === cy ? '올해' : `${statYear}년`;
+  const byLast = (a, b) => lastDate(b).localeCompare(lastDate(a));
+  const best = rated.filter(e => e.rating >= 60).sort((a, b) => b.rating - a.rating || byLast(a, b)).slice(0, 3);
+  const worst = rated.filter(e => e.rating <= 50).sort((a, b) => a.rating - b.rating || byLast(a, b)).slice(0, 3);
+  const dist = Array.from({ length: 10 }, (_, i) => rated.filter(e => Math.min(9, Math.floor(e.rating / 10)) === i).length);
+  let timeVals, timeLabels, timeTip, timeTitle;
+  if (statYear === 'all'){
+    const ys = [...years].reverse();
+    timeVals = ys.map(y => views.filter(v => v.d.startsWith(y)).length); timeLabels = ys; timeTip = (i, v) => `${ys[i]}년 ${v}번`; timeTitle = '연도별 기록';
+  } else {
+    timeVals = Array.from({ length: 12 }, (_, m) => views.filter(v => +v.d.slice(5, 7) === m + 1).length);
+    timeLabels = timeVals.map((_, m) => m + 1); timeTip = (i, v) => `${i + 1}월 ${v}번`; timeTitle = '월별 기록';
+  }
+  const placeRows = PLACES.map(([k, c]) => ({ label: k, color: c, n: ents.filter(e => e.where === k).length })).filter(r => r.n);
+  const unset = ents.filter(e => !e.where).length; if (unset) placeRows.push({ label: '미정', n: unset });
+  placeRows.sort((a, b) => b.n - a.n);
+  const resRows = [{ label: '엔딩 봄', color: 'var(--hi)', n: cleared.length }, { label: '접음', color: 'var(--low)', n: ents.length - cleared.length }].filter(r => r.n);
+  const longest = ents.filter(e => e.hours).sort((a, b) => b.hours - a.hours).slice(0, 6);
+  const chip = (v, label, cur) => `<button class="pill" data-sy="${v}" aria-pressed="${v === cur}">${label}</button>`;
+  box.innerHTML = `
+    <div class="st-filters">
+      <div class="st-years">${years.map(y => chip(y, y === cy ? `올해 (${y})` : y, statYear)).join('')}${chip('all', '전체 기간', statYear)}</div>
+    </div>
+    <div class="st-grid">
+      <div class="kpis">
+        <div class="kpi"><div class="k">한 게임</div><div class="v">${ents.length}<small>개</small></div></div>
+        <div class="kpi"><div class="k">엔딩 본 게임</div><div class="v">${cleared.length}<small>개</small></div></div>
+        <div class="kpi"><div class="k">평균 점수</div><div class="v">${avg}${rated.length ? '<small>점</small>' : ''}</div></div>
+        <div class="kpi"><div class="k">플레이 시간</div><div class="v">${Math.round(hoursSum).toLocaleString('ko-KR')}<small>시간</small></div></div>
+      </div>
+      <div class="st-card"><h4>🏆 ${yLabel}의 게임</h4>${rankRows(best, false)}</div>
+      <div class="st-card"><h4>💔 ${yLabel} 최악의 게임</h4>${rankRows(worst, true)}</div>
+      <div class="st-card"><h4>점수 분포<small>${rated.length}개</small></h4>${vbars(dist, ['0','10','20','30','40','50','60','70','80','90'], (i, v) => `${i * 10}~${i === 9 ? 100 : i * 10 + 9}점 ${v}개`)}</div>
+      <div class="st-card"><h4>${timeTitle}<small>다시 깬 것 포함</small></h4>${vbars(timeVals, timeLabels, timeTip)}</div>
+      <div class="st-card"><h4>기기</h4>${placeRows.length ? hbars(placeRows) : '<div class="st-empty">기록이 없어요</div>'}</div>
+      <div class="st-card"><h4>결말</h4>${resRows.length ? hbars(resRows) : '<div class="st-empty">기록이 없어요</div>'}
+        <h4 style="margin-top:18px">두 번 이상 깬 게임</h4>
+        ${replayed.length ? hbars([...replayed].sort((a, b) => b.rewatches.length - a.rewatches.length).slice(0, 6).map(e => ({ label: e.title, n: e.rewatches.length + 1, unit: '회차' }))) : '<div class="st-empty">아직 없어요. 상세 화면의 ‘또 깼어요’로 남길 수 있어요</div>'}</div>
+      <div class="st-card wide"><h4>오래 한 게임<small>플레이 시간</small></h4>${longest.length ? hbars(longest.map(e => ({ label: e.title, n: e.hours, shown: (Math.round(e.hours*10)/10).toLocaleString('ko-KR'), unit: '시간' }))) : '<div class="st-empty">플레이 시간을 적은 게임이 아직 없어요</div>'}</div>
+    </div>`;
+  box.querySelectorAll('[data-poster]').forEach(el => { const e = state.entries.find(x => x.id === el.dataset.poster); if (e) el.replaceWith(makePoster(e, 'sm')); });
+  box.querySelectorAll('[data-score]').forEach(el => el.replaceWith(makeScore(+el.dataset.score, 'xs')));
+}
+$('#statsView').addEventListener('click', e => {
+  const y = e.target.closest('[data-sy]'); if (y){ statYear = y.dataset.sy; renderStatsView(); return; }
+  const o = e.target.closest('[data-open]'); if (o) openDetail(o.dataset.open);
+});
+$('#statsView').addEventListener('pointerover', e => { const t = e.target.closest('[data-tip]'); if (t) showTip(t, t.dataset.tip); });
+$('#statsView').addEventListener('pointerout', e => { const t = e.target.closest('[data-tip]'); if (t && !t.contains(e.relatedTarget)) hideTip(); });
+window.addEventListener('scroll', hideTip, { passive: true });
+
+/* ---------- 보기 전환 ---------- */
+function setView(v){
+  view = v;
+  $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.v === v)));
+  const seen = v === 'seen', stats = v === 'stats';
+  $('#listView').hidden = stats; $('#statsView').hidden = !stats;
+  $('#places').hidden = !seen; $('#rateFilter').hidden = !seen; $('#resFilter').hidden = !seen; $('#sort').hidden = !seen;
+  $('#q').placeholder = seen ? '제목·한줄평 검색' : '제목·메모 검색';
+  $('#addBtn').setAttribute('aria-label', v === 'want' ? '할 게임 담기' : v === 'watching' ? '하는 중 추가' : '기록하기');
+  if (stats) renderStatsView(); else renderList();
+}
+$$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.v)));
+$('#places').addEventListener('click', e => {
+  const p = e.target.closest('.pill'); if (!p) return;
+  place = p.dataset.p; $$('#places .pill').forEach(x => x.setAttribute('aria-pressed', String(x === p))); renderList();
+});
+const segGroup = (sel, attr, set) => $$(sel + ' button').forEach(b => b.addEventListener('click', () => {
+  set(b.dataset[attr]); $$(sel + ' button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderList();
+}));
+segGroup('#rateFilter', 'f', v => { rateF = v; });
+segGroup('#resFilter', 'r', v => { resF = v; });
+$('#sort').addEventListener('change', e => { sort = e.target.value; renderList(); });
+let qt; $('#q').addEventListener('input', e => { clearTimeout(qt); qt = setTimeout(() => { query = e.target.value; renderList(); }, 120); });
+$('#addBtn').addEventListener('click', () => openForm(null, view === 'stats' ? 'seen' : view));
+$('#hSearch').addEventListener('click', () => { if (view === 'stats') setView('seen'); const q = $('#q'); q.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' }); q.focus({ preventScroll: true }); });
+$('#hStats').addEventListener('click', () => { setView('stats'); $('.tabs').scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' }); });
+$('#hTheme').addEventListener('click', cycleTheme);
+
+/* ---------- 다이얼로그 공통 ---------- */
+$$('dialog').forEach(d => {
+  d.addEventListener('click', e => { if (e.target === d) d.close(); });
+  d.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => d.close()));
+});
+
+/* ---------- 기록 폼 ---------- */
+const form = $('#form'), editDlg = $('#editDlg');
+let editingId = null, formMode = 'seen', converting = false, rating = 0, where = '', fres = 'clear', formRw = [];
+
+/* 점수 슬라이더 — 밀거나 눌러서, 방향키(±1)·PageUp/Down(±10)으로, 숫자 칸에 직접 */
+const scoreIn = $('#scoreIn'), scoreVal = $('#scoreVal');
+function setScore(v, fromInput){
+  v = Math.max(0, Math.min(100, Math.round(+v || 0)));
+  rating = v;
+  scoreIn.style.setProperty('--p', v / 100);
+  scoreIn.className = 'sbar ' + band(v);
+  if (!fromInput) scoreVal.value = v ? v : '';
+  $('#scoreHint').textContent = v ? hintOf(v) : '밀어서 매기기';
+  scoreIn.setAttribute('aria-valuenow', v); scoreIn.setAttribute('aria-valuetext', v ? `${v}점, ${hintOf(v)}` : '점수 없음');
+}
+const scoreFromX = x => { const r = scoreIn.getBoundingClientRect(); return Math.round(Math.max(0, Math.min(1, (x - r.left) / r.width)) * 100); };
+let dragging = false;
+scoreIn.addEventListener('pointerdown', e => { if (dragging) return; dragging = true; scoreIn.setPointerCapture(e.pointerId); setScore(scoreFromX(e.clientX)); });
+scoreIn.addEventListener('pointermove', e => { if (dragging) setScore(scoreFromX(e.clientX)); });
+scoreIn.addEventListener('pointerup', () => { dragging = false; });
+scoreIn.addEventListener('pointercancel', () => { dragging = false; });
+scoreIn.addEventListener('keydown', e => {
+  const step = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 10, PageDown: -10 }[e.key];
+  if (step){ e.preventDefault(); setScore(rating + step); }
+  else if (e.key === 'Home'){ e.preventDefault(); setScore(0); }
+  else if (e.key === 'End'){ e.preventDefault(); setScore(100); }
+});
+scoreVal.addEventListener('input', () => { const d = scoreVal.value.replace(/\D/g, '').slice(0, 3); if (d !== scoreVal.value) scoreVal.value = d; setScore(d, true); });
+scoreVal.addEventListener('blur', () => setScore(rating));
+$('#presets').innerHTML = [50, 60, 70, 80, 90, 100].map(v => `<button type="button" data-v="${v}">${v}</button>`).join('');
+$('#presets').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) setScore(+b.dataset.v); });
+
+function setWhere(w){
+  where = w;
+  $('#fWhere').innerHTML = PLACES.map(([p,c]) => `<button type="button" data-w="${p}" aria-pressed="${p === w}" style="--tc:${c}"><i></i>${p}</button>`).join('');
+}
+$('#fWhere').addEventListener('click', e => {
+  const b = e.target.closest('[data-w]'); if (!b) return;
+  where = where === b.dataset.w ? '' : b.dataset.w;
+  $$('#fWhere button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.w === where)));
+});
+function setRes(r){
+  fres = r; form.dataset.result = r;
+  $$('#fRes button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.r === r)));
+  updateFormLabels();
+}
+$('#fRes').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (b) setRes(b.dataset.r); });
+function updateFormLabels(){
+  $('#lblMemo').textContent = formMode === 'watching' ? '어디까지 했는지 (선택)' : '메모 (선택)';
+  $('#fMemo').placeholder = formMode === 'watching' ? '예: 3장 보스 앞' : '왜 하고 싶은지, 누가 추천했는지';
+  $('#lblDate').textContent = formMode === 'watching' ? '시작한 날' : fres === 'drop' ? '접은 날' : '엔딩 본 날';
+  $('#lblHours').textContent = formMode === 'watching' ? '지금까지 플레이 시간 (선택)' : '플레이 시간 (선택)';
+  $('#lblWhere').textContent = formMode === 'want' ? '할 기기 (선택)' : '기기';
+}
+function renderRw(){
+  $('#rwList').innerHTML = formRw.map((d, i) => `<span class="rwchip">${i + 2}회차 · ${dot(d)}<button type="button" data-rw="${i}" aria-label="${dot(d)} 지우기">×</button></span>`).join('');
+}
+$('#rwList').addEventListener('click', e => { const b = e.target.closest('[data-rw]'); if (!b) return; formRw.splice(+b.dataset.rw, 1); renderRw(); });
+$('#rwAddBtn').addEventListener('click', () => {
+  const d = $('#rwDate').value || today();
+  if (!formRw.includes(d)) { formRw.push(d); formRw.sort(); }
+  $('#rwDate').value = ''; renderRw();
+});
+
+const btnDel = $('#btnDel');
+function disarm(){ btnDel.classList.remove('armed'); btnDel.textContent = '삭제'; clearTimeout(btnDel._t); }
+btnDel.addEventListener('click', () => {
+  if (!btnDel.classList.contains('armed')){ btnDel.classList.add('armed'); btnDel.textContent = '한 번 더 누르면 삭제'; btnDel._t = setTimeout(disarm, 3000); return; }
+  const id = editingId; disarm(); editDlg.close(); removeEntry(id);
+});
+
+const parseHours = s => { const v = parseFloat(String(s).replace(',', '.').replace(/[^\d.]/g, '')); return isFinite(v) ? v : 0; };
+/* convert: 'seen'(다 했어요) | 'watching'(하기 시작) */
+function openForm(id, mode, convert){
+  editingId = id || null;
+  const e = id ? state.entries.find(x => x.id === id) : null;
+  converting = e && convert ? convert : false;
+  formMode = converting || (e ? statusOf(e) : (mode || view));
+  form.dataset.mode = formMode;
+  $('#formTitle').textContent = converting === 'seen' ? '다 했어요 · 기록하기'
+    : converting === 'watching' ? '하기 시작'
+    : formMode === 'want' ? (e ? '할 게임 수정' : '할 게임 담기')
+    : formMode === 'watching' ? (e ? '하는 중 수정' : '하는 중 추가')
+    : (e ? '기록 수정' : '기록하기');
+  setRes(e && statusOf(e) === 'seen' ? e.result : 'clear');
+  formRw = e ? [...e.rewatches] : []; renderRw(); $('#rwDate').value = '';
+  $('#fTitle').value = e ? e.title : '';
+  $('#fYear').value = e ? e.year : '';
+  $('#fMemo').value = e ? e.memo : '';
+  $('#fLine').value = e ? e.line : '';
+  $('#fNote').value = e ? e.note : '';
+  $('#fHours').value = e && e.hours ? e.hours : '';
+  $('#fDate').value = e && !converting ? e.date : today();
+  setWhere(e ? e.where : (place !== 'all' ? place : ''));
+  setScore(e && !converting ? e.rating : 0);
+  btnDel.hidden = !e || converting; disarm();
+  picked = e && (e.bg || e.steam) ? { id: e.rawgId, title: e.title, year: e.year, bg: e.bg, steam: e.steam } : null;
+  renderPicks(picked ? [picked] : []);
+  if (e && !e.bg && !e.steam) searchPicks();
+  $('#fTitle').style.borderColor = '';
+  editDlg.showModal();
+  if (!e) $('#fTitle').focus(); else if (converting === 'seen') scoreIn.focus();
+}
+form.addEventListener('submit', ev => {
+  ev.preventDefault();
+  const title = $('#fTitle').value.trim();
+  if (!title){ $('#fTitle').style.borderColor = 'var(--low)'; $('#fTitle').focus(); return; }
+  const now = Date.now();
+  const base = { title, year: $('#fYear').value.replace(/\D/g,'').slice(0,4), where,
+    rawgId: picked ? picked.id : 0, steam: picked ? picked.steam || 0 : 0, bg: picked ? picked.bg || '' : '', updatedAt: now };
+  const date = $('#fDate').value, hours = Math.max(0, Math.min(99999, Math.round(parseHours($('#fHours').value)*10)/10));
+  const data = formMode === 'want' ? { ...base, status: 'want', memo: $('#fMemo').value.trim() }
+    : formMode === 'watching' ? { ...base, status: 'watching', memo: $('#fMemo').value.trim(), date, hours }
+    : { ...base, status: 'seen', result: fres, rating, hours, line: $('#fLine').value.trim(), note: $('#fNote').value.replace(/\s+$/,''), date,
+        rewatches: fres === 'clear' ? [...new Set(formRw.filter(d => d !== date))].sort() : [] };
+  if (editingId) Object.assign(state.entries.find(x => x.id === editingId), data);
+  else state.entries.push(normEntry({ id: uid(), createdAt: now, ...data }));
+  save(); editDlg.close();
+  setTimeout(render, reduce ? 0 : 120);
+  toast(converting === 'seen' ? (fres === 'drop' ? '접은 게임으로 남겼어요' : '엔딩 축하해요 · 한 게임으로 옮겼어요') : converting === 'watching' ? '하는 중으로 옮겼어요' : editingId ? '수정했어요'
+    : formMode === 'want' ? '할 게임에 담았어요' : formMode === 'watching' ? '하는 중에 담았어요' : '세이브했어요');
+});
+$('#fTitle').addEventListener('input', e => { e.target.style.borderColor = ''; });
+
+/* 폼 안 표지 고르기 */
+let picked = null, pickT, pickSeq = 0;
+function pickMsg(html){ $('#pickMsg').innerHTML = html; }
+function pickThumb(m){
+  const srcs = coverSrcs(m, 420);
+  if (!srcs.length){ const d = document.createElement('span'); d.className = 'ph none'; d.textContent = '표지 없음'; return d; }
+  const img = new Image(); img.className = 'ph'; img.alt = ''; img.loading = 'lazy';
+  chainImg(img, srcs, () => { const d = document.createElement('span'); d.className = 'ph none'; d.textContent = '표지 없음'; img.replaceWith(d); });
+  return img;
+}
+function renderPicks(list){
+  const box = $('#picks'); box.textContent = '';
+  list.forEach(m => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'pick';
+    b.setAttribute('aria-pressed', String(pickKey(picked) === pickKey(m)));
+    b.append(pickThumb(m));
+    const sm = document.createElement('small'); const bt = document.createElement('b'); bt.textContent = m.title; sm.append(bt, ' ' + (m.year || '')); b.append(sm);
+    b.addEventListener('click', async () => {
+      picked = pickKey(picked) === pickKey(m) ? null : m;
+      if (picked){
+        const cur = $('#fTitle').value.trim();
+        if (!hasHangul(cur)) $('#fTitle').value = m.title; /* 한글로 적은 제목은 그대로 둔다 */
+        if (m.year) $('#fYear').value = m.year; $('#fTitle').style.borderColor = '';
+      }
+      box.querySelectorAll('.pick').forEach(x => x.setAttribute('aria-pressed', 'false'));
+      if (picked) b.setAttribute('aria-pressed', 'true');
+      updatePickMsg(list.length);
+      /* 스팀에 있으면 세로 표지로 바꿔 끼운다 */
+      if (picked && m.id && !m.steam && !m.steamTried){
+        m.steamTried = true; m.steam = await steamOf(m.id);
+        if (m.steam){ const old = b.querySelector('.ph'); if (old) old.replaceWith(pickThumb(m)); }
+      }
+    });
+    box.append(b);
+  });
+  updatePickMsg(list.length);
+}
+function updatePickMsg(n){
+  if (!rawgKey()){ pickMsg('표지를 붙이려면 <button type="button" data-rawg>RAWG 키 넣기</button>'); return; }
+  if (picked) pickMsg('표지를 골랐어요 · <button type="button" data-unpick>빼기</button> · <button type="button" data-research>다른 표지 찾기</button>');
+  else if (n) pickMsg('맞는 게임을 누르면 표지와 연도가 채워져요');
+  else pickMsg('');
+}
+$('#pickMsg').addEventListener('click', e => {
+  if (e.target.closest('[data-unpick]')){ picked = null; $$('#picks .pick').forEach(x => x.setAttribute('aria-pressed', 'false')); updatePickMsg(1); }
+  if (e.target.closest('[data-rawg]')) openRawg();
+  if (e.target.closest('[data-research]')) searchPicks();
+});
+async function searchPicks(){
+  const q = $('#fTitle').value.trim(), seq = ++pickSeq;
+  if (!rawgKey() || q.length < 1){ renderPicks(picked ? [picked] : []); return; }
+  pickMsg('찾는 중…');
+  let list;
+  try { list = await searchGames(q, $('#fYear').value.trim()); }
+  catch(err){ if (seq === pickSeq) pickMsg(err.message === 'key' ? 'RAWG 키가 맞지 않아요 · <button type="button" data-rawg>표지 설정</button>' : '표지를 불러오지 못했어요'); return; }
+  if (seq !== pickSeq) return;
+  if (picked && !list.some(m => pickKey(m) === pickKey(picked))) list.unshift(picked);
+  else if (picked) list = list.map(m => pickKey(m) === pickKey(picked) ? picked : m);
+  renderPicks(list);
+  if (!list.length) pickMsg(hasHangul(q) ? 'RAWG는 한글 제목을 잘 못 찾아요. 영문 제목으로 찾아보세요 (고른 뒤 한글로 바꿔도 돼요)' : 'RAWG에서 못 찾았어요. 표지 없이 저장돼요');
+}
+$('#fTitle').addEventListener('input', () => { clearTimeout(pickT); pickT = setTimeout(searchPicks, 450); });
+$('#fYear').addEventListener('change', () => { if ($('#fTitle').value.trim()) searchPicks(); });
+
+$('#rawgForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const key = $('#rawgKey').value.trim();
+  if (!key){ if (rawgKey()) $('#rawgDlg').close(); else $('#rawgKey').focus(); return; }
+  const btn = $('#rawgSave'); btn.disabled = true; btn.textContent = '확인 중…';
+  try {
+    await rawg('/games', { page_size: 1 }, key);
+    lsSet(RAWG_KEY, key); renderRawgBadge(); $('#rawgDlg').close(); toast('표지 설정을 켰어요');
+    if (editDlg.open) searchPicks(); else fillPosters(true);
+  } catch(err){
+    $('#rawgMsg').textContent = err.message === 'key' ? '키가 맞지 않아요. RAWG에서 받은 API 키를 다시 복사해 주세요' : '확인하지 못했어요. 인터넷 연결을 확인해 주세요';
+  } finally { btn.disabled = false; btn.textContent = '저장'; }
+});
+$('#rawgOff').addEventListener('click', () => { lsDel(RAWG_KEY); renderRawgBadge(); $('#rawgDlg').close(); toast('RAWG 키를 지웠어요'); });
+
+function removeEntry(id){
+  const n = nodes.get(id);
+  const finish = () => { state.entries = state.entries.filter(e => e.id !== id); state.deleted[id] = Date.now(); save(); render(); toast('삭제했어요'); };
+  if (n && n.isConnected && !reduce){ n.style.transition = 'opacity 180ms ease, transform 180ms var(--ease-out)'; n.classList.add('leaving'); setTimeout(() => { n.style.transition = ''; finish(); }, 180); }
+  else finish();
+}
+
+/* ---------- 상세 ---------- */
+const detailDlg = $('#detailDlg'); let detailId = null;
+function openDetail(id){
+  const e = state.entries.find(x => x.id === id); if (!e) return;
+  detailId = id; const st = statusOf(e), want = st !== 'seen';
+  $('#dPoster').replaceChildren(makePoster(e, 'lg'));
+  $('#dTitle').textContent = e.title;
+  $('#dYear').textContent = [e.year, st === 'want' ? '할 게임' : st === 'watching' ? '하는 중' : RESULT[e.result],
+    st === 'seen' && e.rewatches.length && `${e.rewatches.length + 1}회차`, st !== 'want' && hrs(e.hours)].filter(Boolean).join(' · ');
+  const sc = $('#dScore'); sc.textContent = ''; sc.hidden = want;
+  if (!want){
+    sc.append(makeScore(e.rating, 'lg'));
+    const h = document.createElement('span'); h.style.cssText = 'color:var(--muted);font-size:13px'; h.textContent = hintOf(e.rating); sc.append(h);
+  }
+  const dl = $('#dLine'); dl.textContent = e.line; dl.hidden = want || !e.line;
+  const dn = $('#dNote');
+  if (want){ dn.textContent = e.memo || (st === 'watching' ? '어디까지 했는지 아직 안 적었어요.' : '메모 없음'); dn.classList.toggle('empty', !e.memo); }
+  else { dn.textContent = e.note || '감상을 아직 안 남겼어요.'; dn.classList.toggle('empty', !e.note); }
+  const dm = $('#dMeta'); dm.textContent = '';
+  const items = st === 'want'
+    ? [e.where && `${e.where}로 할 예정`, '담은 날 ' + new Date(e.createdAt).toLocaleDateString('ko-KR')]
+    : st === 'watching' ? [e.date && `${dot(e.date)} 시작`, e.where && `${e.where}로 하는 중`]
+    : [e.date && `${e.result === 'drop' ? '접은 날' : '엔딩 본 날'} ${dot(e.date)}`, ...e.rewatches.map((d, i) => `${i + 2}회차 ${dot(d)}`), e.where && `기기 ${e.where}`, e.memo && `할 때 메모 · ${e.memo}`];
+  items.filter(Boolean).forEach(s => { const sp = document.createElement('span'); sp.textContent = s; dm.append(sp); });
+  $('#btnSeen').hidden = st === 'seen'; $('#btnSeen').textContent = st === 'watching' ? '다 했어요' : '했어요';
+  $('#btnStart').hidden = st !== 'want';
+  $('#btnAgain').hidden = st !== 'seen' || e.result !== 'clear';
+  if (!detailDlg.open) detailDlg.showModal();
+}
+$('#btnEdit').addEventListener('click', () => { const id = detailId; detailDlg.close(); setTimeout(() => openForm(id), 80); });
+$('#btnSeen').addEventListener('click', () => { const id = detailId; detailDlg.close(); setTimeout(() => openForm(id, null, 'seen'), 80); });
+$('#btnStart').addEventListener('click', () => { const id = detailId; detailDlg.close(); setTimeout(() => openForm(id, null, 'watching'), 80); });
+/* 또 깼어요 — 오늘 날짜로 회차를 하나 더한다. 날짜는 수정에서 바꿀 수 있다 */
+$('#btnAgain').addEventListener('click', () => {
+  const e = state.entries.find(x => x.id === detailId); if (!e) return;
+  const d = today();
+  if (e.date === d || e.rewatches.includes(d)){ toast('오늘 깬 기록이 이미 있어요'); return; }
+  e.rewatches = [...e.rewatches, d].sort(); e.updatedAt = Date.now();
+  save(); render(); openDetail(e.id);
+  toast(`${e.rewatches.length + 1}회차로 기록했어요 · 날짜는 수정에서 바꿀 수 있어요`);
+});
+
+/* ---------- 추가 링크 (#add=…) ----------
+   Claude가 만들어 준 링크를 열면 그 안의 기록을 보여 주고, 확인하면 더한다. 주소창의 #add 는 바로 지운다. */
+let pendingAdd = [], pendingFill = [];
+function checkAddLink(){
+  if (!location.hash.startsWith('#add=')) return;
+  const raw = location.hash.slice(5);
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(_){}
+  let list;
+  try {
+    const b64 = raw.replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(b64 + '='.repeat((4 - b64.length % 4) % 4));
+    const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))));
+    list = (Array.isArray(data) ? data : data.entries || []).map(normEntry).filter(Boolean);
+  } catch(_){ toast('추가 링크를 읽지 못했어요'); return; }
+  if (!list.length) return;
+  const key = e => normT(e.title) + '|' + (e.date || '');
+  const have = new Set(state.entries.map(key));
+  /* 날짜 없이 먼저 들어간 같은 제목 기록이 있으면 새로 만들지 않고 날짜만 채운다 */
+  const dateless = e => e.date && state.entries.find(x => !x.date && normT(x.title) === normT(e.title));
+  pendingFill = list.filter(e => !have.has(key(e)) && dateless(e)).map(e => [dateless(e), e]);
+  pendingAdd = list.filter(e => !have.has(key(e)) && !dateless(e));
+  const skip = list.length - pendingAdd.length - pendingFill.length;
+  $('#addTitle').textContent = pendingAdd.length || pendingFill.length ? [pendingAdd.length && `기록 ${pendingAdd.length}개 추가`, pendingFill.length && `${pendingFill.length}개 날짜 채우기`].filter(Boolean).join(' · ') : '추가할 기록이 없어요';
+  $('#addList').innerHTML = list.map(e => `<div class="rank-row" style="cursor:default"><span class="body"><span class="t">${esc(e.title)}</span><span class="l">${esc([statusOf(e) === 'want' ? '할 게임' : statusOf(e) === 'watching' ? '하는 중' : dot(e.date), statusOf(e) === 'seen' && e.rating && e.rating + '점', e.where, e.memo].filter(Boolean).join(' · '))}</span></span>${have.has(key(e)) ? '<span class="hint-pill">이미 있음</span>' : pendingFill.some(([, x]) => x === e) ? '<span class="hint-pill">날짜 채움</span>' : ''}</div>`).join('') + (skip ? `<p class="bmsg">${skip}개는 이미 있어서 건너뛰어요.</p>` : '');
+  $('#addGo').hidden = !pendingAdd.length && !pendingFill.length;
+  $('#addDlg').showModal();
+}
+$('#addGo').addEventListener('click', () => {
+  const now = Date.now();
+  pendingAdd.forEach((e, i) => state.entries.push({ ...e, id: uid() + i, createdAt: now + i, updatedAt: now + i }));
+  pendingFill.forEach(([old, e]) => { old.date = e.date; old.updatedAt = now; });
+  const n = pendingAdd.length, f = pendingFill.length; pendingAdd = []; pendingFill = [];
+  save(); $('#addDlg').close(); render(); toast([n && `${n}개를 추가했어요`, f && `${f}개 날짜를 채웠어요`].filter(Boolean).join(' · '));
+  setTimeout(() => fillPosters(true), 600);
+});
+window.addEventListener('hashchange', checkAddLink);
+
+/* ---------- 메뉴 ---------- */
+const menu = $('#menu'), menuBtn = $('#menuBtn');
+function toggleMenu(open){ menu.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); }
+menuBtn.addEventListener('click', e => { e.stopPropagation(); toggleMenu(menu.hidden); });
+document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target)) toggleMenu(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) toggleMenu(false); });
+menu.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act; toggleMenu(false);
+  if (act === 'sync') openSync();
+  else if (act === 'daylog') importDaylog(false);
+  else if (act === 'rawg') openRawg();
+  else if (act === 'fillposters') fillPosters(false);
+  else if (act === 'export') exportFile();
+  else if (act === 'import') $('#importFile').click();
+  else if (act === 'theme') cycleTheme();
+});
+
+/* 백업 */
+function exportFile(){
+  const blob = new Blob([JSON.stringify({ app: 'newgameplus', version: 1, exportedAt: new Date().toISOString(), ...state }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `뉴게임플러스-백업-${today()}.json`;
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('백업 파일을 내려받았어요');
+}
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  let incoming;
+  try { incoming = migrate(JSON.parse(await f.text())); } catch(_){ toast('백업 파일 형식이 아니에요'); return; }
+  if (!incoming.entries.length){ toast('가져올 기록이 없어요'); return; }
+  let add = 0, upd = 0;
+  incoming.entries.forEach(x => {
+    const i = state.entries.findIndex(y => y.id === x.id);
+    if (i >= 0){ state.entries[i] = { ...x, updatedAt: Date.now() }; upd++; } else { state.entries.push({ ...x, updatedAt: Date.now() }); add++; }
+    delete state.deleted[x.id];
+  });
+  save(); render(); toast(`새 기록 ${add}개, 덮어쓴 기록 ${upd}개`);
+});
+
+/* 테마 */
+const THEMES = ['auto','dark','light'], THEME_NAME = { auto: '시스템 따라가기', dark: '어둡게', light: '밝게' };
+function applyTheme(){
+  const t = lsGet(THEME_KEY) || 'auto';
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = t;
+  $('#themeLabel').textContent = '· ' + THEME_NAME[t];
+  const dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  $('#hTheme').innerHTML = dark ? IC.moon : IC.sun; $('#hTheme').setAttribute('aria-label', `테마 바꾸기 (지금: ${THEME_NAME[t]})`);
+}
+function cycleTheme(){
+  const t = lsGet(THEME_KEY) || 'auto'; const n = THEMES[(THEMES.indexOf(t) + 1) % 3];
+  lsSet(THEME_KEY, n); applyTheme(); toast('테마 · ' + THEME_NAME[n]);
+}
+
+/* ---------- 토스트 ---------- */
+let tt;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200); }
+async function copy(text){
+  try { await navigator.clipboard.writeText(text); toast('복사했어요'); }
+  catch(_){ toast('복사가 막혀 있어요. 직접 선택해서 복사해 주세요'); }
+}
+
+/* ---------- 기기 간 동기화 (GitHub Gist) ---------- */
+const SYNC_KEY = 'newgameplus.sync', GIST_FILE = 'newgameplus-sync.json', GH = 'https://api.github.com';
+const syncCfg = () => { try { return JSON.parse(lsGet(SYNC_KEY) || 'null'); } catch(_){ return null; } };
+const setSyncCfg = c => c ? lsSet(SYNC_KEY, JSON.stringify(c)) : lsDel(SYNC_KEY);
+let syncState = { busy: false, last: 0, err: '' };
+function ghFetch(path, token, opt = {}){
+  return fetch(GH + path, Object.assign({}, opt, { headers: Object.assign({ 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' }, opt.body ? { 'Content-Type': 'application/json' } : {}) }));
+}
+async function readGist(token, id){
+  const r = await ghFetch('/gists/' + id + '?t=' + Date.now(), token);
+  if (r.status === 401) throw new Error('token'); if (r.status === 404) throw new Error('nogist'); if (!r.ok) throw new Error('http');
+  const g = await r.json(); const f = g.files && g.files[GIST_FILE]; if (!f) throw new Error('nogist');
+  const txt = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+  return migrate(JSON.parse(txt));
+}
+async function writeGist(token, id, data){
+  const r = await ghFetch('/gists/' + id, token, { method: 'PATCH', body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(data) } } }) });
+  if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('http');
+}
+async function findGist(token){
+  for (let page = 1; page <= 5; page++){
+    const r = await ghFetch('/gists?per_page=100&page=' + page, token);
+    if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('http');
+    const list = await r.json(); if (!list.length) break;
+    const g = list.find(g => g.files && g.files[GIST_FILE]); if (g) return g.id;
+  }
+  return null;
+}
+async function createGist(token, data){
+  const r = await ghFetch('/gists', token, { method: 'POST', body: JSON.stringify({ description: '뉴게임플러스 동기화 데이터 (지우지 마세요)', public: false, files: { [GIST_FILE]: { content: JSON.stringify(data) } } }) });
+  if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('http');
+  return (await r.json()).id;
+}
+function mergeStates(a, b){
+  const deleted = Object.assign({}, a.deleted || {});
+  Object.entries(b.deleted || {}).forEach(([id, t]) => { deleted[id] = Math.max(deleted[id] || 0, t); });
+  const map = new Map();
+  [...(a.entries || []), ...(b.entries || [])].forEach(x => { const cur = map.get(x.id); if (!cur || (x.updatedAt || 0) > (cur.updatedAt || 0)) map.set(x.id, x); });
+  const entries = [...map.values()].filter(x => !(deleted[x.id] && deleted[x.id] >= (x.updatedAt || 0)));
+  const dlSeen = Object.assign({}, b.dlSeen || {}, a.dlSeen || {});
+  return { entries, deleted, dlSeen, savedAt: Math.max(a.savedAt || 0, b.savedAt || 0) };
+}
+const sigOf = st => JSON.stringify({ e: [...(st.entries || [])].sort((x,y) => x.id < y.id ? -1 : 1), d: st.deleted || {}, s: Object.keys(st.dlSeen || {}).sort() });
+
+/* 데이로그 '언젠가'의 게임 → 할 게임 (읽기만 한다. 데이로그 데이터는 건드리지 않음)
+   한 번 가져온 이름은 dlSeen 에 남겨서, 여기서 지운 게임이 다시 들어오지 않게 한다. */
+const DL_MARK = 'questboard-sync', DL_GID_KEY = 'newgameplus.daylogGist';
+const DL_PLAT = { ps: 'PS', switch: '스위치', pc: 'PC', mobile: '모바일' };
+async function findDaylogGist(token){
+  const cached = lsGet(DL_GID_KEY); if (cached) return cached;
+  for (let page = 1; page <= 5; page++){
+    const r = await ghFetch('/gists?per_page=100&page=' + page, token);
+    if (!r.ok) return null;
+    const list = await r.json(); if (!list.length) break;
+    const g = list.find(g => g.description === DL_MARK); if (g){ lsSet(DL_GID_KEY, g.id); return g.id; }
+  }
+  return null;
+}
+async function daylogGames(token){
+  const id = await findDaylogGist(token); if (!id) return null;
+  const r = await ghFetch('/gists/' + id + '?t=' + Date.now(), token);
+  if (r.status === 404){ lsDel(DL_GID_KEY); return null; }
+  if (!r.ok) throw new Error('http');
+  const g = await r.json(); const out = new Map();
+  for (const name of ['home.json', 'work.json']){
+    const f = g.files && g.files[name]; if (!f) continue;
+    let d; try { d = JSON.parse(f.truncated ? await (await fetch(f.raw_url)).text() : f.content); } catch(_){ continue; }
+    const works = d.works || {}, someday = (d.days && d.days.someday) || [];
+    someday.forEach(it => {
+      if (!it || it.done || it.canceled) return;
+      const t = String(it.text || '').trim(); const w = works[t];
+      if (!t || !w || w.fin || w.kind !== 'game') return;
+      out.set(t, { note: it.note || '', where: DL_PLAT[w.plat] || '' });
+    });
+  }
+  return out;
+}
+async function importDaylog(quiet = true){
+  const cfg = syncCfg(); if (!cfg) { if (!quiet) toast('먼저 기기 간 동기화를 연결해 주세요'); return; }
+  let games;
+  try { games = await daylogGames(cfg.token); } catch(_){ if (!quiet) toast('데이로그를 읽지 못했어요. 잠시 후 다시 해주세요'); return; }
+  if (!games){ if (!quiet) toast('데이로그 동기화 데이터를 찾지 못했어요'); return; }
+  state.dlSeen = state.dlSeen || {};
+  const have = new Set(state.entries.map(e => normT(e.title)));
+  const added = [];
+  games.forEach(({ note, where }, title) => {
+    if (state.dlSeen[title]) return;
+    state.dlSeen[title] = Date.now();
+    if (have.has(normT(title))) return;
+    const now = Date.now();
+    state.entries.push(normEntry({ id: uid(), title, where, status: 'want', memo: note ? `데이로그 언젠가 · ${note}` : '데이로그 언젠가에서 가져옴', createdAt: now, updatedAt: now }));
+    added.push(title);
+  });
+  if (added.length || games.size){ save(); render(); }
+  if (added.length) toast(`데이로그에서 할 게임 ${added.length}개를 가져왔어요`);
+  if (added.length && rawgKey()) setTimeout(() => fillPosters(true), 2500);
+  else if (!added.length && !quiet) toast('새로 가져올 게임이 없어요');
+}
+async function syncNow(quiet = true){
+  const cfg = syncCfg(); if (!cfg || syncState.busy) return;
+  syncState.busy = true; renderSyncBadge();
+  try {
+    const remote = await readGist(cfg.token, cfg.gistId);
+    const merged = mergeStates(state, remote);
+    if (sigOf(merged) !== sigOf(state)){
+      state = migrate(merged); lsSet(KEY, JSON.stringify(state));
+      if (!document.querySelector('dialog[open]')) render();
+    }
+    if (sigOf(merged) !== sigOf(remote)) await writeGist(cfg.token, cfg.gistId, state);
+    syncState.last = Date.now(); syncState.err = '';
+    if (Date.now() - dlLast > 10*60*1000){ dlLast = Date.now(); setTimeout(() => importDaylog(true), 0); }
+  } catch(e){
+    syncState.err = e.message === 'token' ? '토큰이 만료됐거나 맞지 않아요' : e.message === 'nogist' ? '클라우드 기록을 찾지 못했어요' : '인터넷 연결을 확인해주세요';
+    if (!quiet) toast('동기화 실패 · ' + syncState.err);
+  } finally { syncState.busy = false; renderSyncBadge(); }
+}
+let pushT, dlLast = 0;
+function schedulePush(){ if (!syncCfg()) return; clearTimeout(pushT); pushT = setTimeout(() => syncNow(true), 1500); }
+function renderSyncBadge(){
+  const cfg = syncCfg();
+  $('#syncBadge').textContent = !cfg ? '· 꺼짐' : syncState.busy ? '· 맞추는 중…' : syncState.err ? '· 오류' : syncState.last ? '· 최신' : '· 켜짐';
+}
+const TOKEN_URL = 'https://github.com/settings/tokens/new?scopes=gist&description=' + encodeURIComponent('뉴게임플러스 동기화');
+function openSync(){
+  const cfg = syncCfg(), body = $('#syncBody'), foot = $('#syncFoot');
+  if (cfg){
+    const t = syncState.last ? new Date(syncState.last).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
+    body.innerHTML = `<p style="margin:4px 0 0;line-height:1.6">이 기기는 <b>동기화 중</b>이에요. 다른 기기에서 바꾼 내용은 앱을 열거나 다시 볼 때 자동으로 들어와요.</p>
+      <p class="bmsg">${syncState.err ? `⚠ ${esc(syncState.err)}` : t ? `마지막으로 맞춘 시각 ${t}` : ''}</p>
+      <div style="margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:10px">
+        <div style="font-size:13px;font-weight:700">다른 기기 연결용 토큰</div>
+        <p class="bmsg" style="margin:4px 0 8px">폰·회사 PC를 연결할 때 이 토큰을 복사해서 쓰세요.</p>
+        <button type="button" class="btn sm" id="syncCopy">토큰 복사</button>
+      </div>`;
+    foot.innerHTML = `<button type="button" class="btn ghost danger sm" id="syncOff">이 기기 연결 끊기</button><div class="right"><button type="button" class="btn" data-close>닫기</button><button type="button" class="btn primary" id="syncGo">지금 맞추기</button></div>`;
+  } else {
+    body.innerHTML = `<p style="margin:4px 0 0;line-height:1.6;color:var(--muted);font-size:14px">게임 기록을 깃허브의 <b>비공개 Gist</b>에 저장해서 집·회사·폰이 같은 기록을 써요. 기기마다 처음 한 번만 토큰을 넣으면 돼요.</p>
+      <ol style="margin:12px 0 0;padding-left:20px;font-size:14px;line-height:1.7">
+        <li><b>엔딩크레딧·책갈피 토큰을 그대로 써도 돼요.</b> 그 앱 메뉴 → 기기 간 동기화 → 토큰 복사</li>
+        <li>새로 만들려면 <a href="${TOKEN_URL}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">토큰 만들기 페이지 열기 ↗</a> → 체크는 <b>gist</b>만 → 맨 아래 <b>Generate token</b> → <code>ghp_…</code> 복사</li>
+        <li>아래에 붙여넣고 <b>연결</b></li>
+      </ol>
+      <label class="f"><span>깃허브 토큰</span><input class="in" id="syncToken" autocomplete="off" spellcheck="false" placeholder="ghp_로 시작"></label>
+      <p class="bmsg">토큰은 이 기기의 브라우저에만 저장되고, gist 권한만 있어서 저장소나 코드는 건드릴 수 없어요.</p>
+      <div id="syncChoice"></div>`;
+    foot.innerHTML = `<div class="right"><button type="button" class="btn" data-close>취소</button><button type="button" class="btn primary" id="syncConnect">연결</button></div>`;
+  }
+  foot.querySelectorAll('[data-close]').forEach(b => b.onclick = () => $('#syncDlg').close());
+  $('#syncDlg').showModal();
+}
+$('#syncFoot').addEventListener('click', async e => {
+  const id = e.target.id;
+  if (id === 'syncGo'){ await syncNow(false); if (!syncState.err) toast('최신 상태예요'); openSync(); }
+  else if (id === 'syncOff'){
+    if (!confirm('이 기기의 동기화를 끌까요? 이 기기 기록은 그대로 남아요.')) return;
+    setSyncCfg(null); syncState = { busy: false, last: 0, err: '' }; renderSyncBadge(); $('#syncDlg').close(); toast('동기화를 껐어요');
+  }
+  else if (id === 'syncConnect'){
+    const token = ($('#syncToken').value || '').trim(); if (!token){ $('#syncToken').focus(); return; }
+    const btn = e.target; btn.disabled = true; btn.textContent = '확인 중…';
+    try {
+      const gid = await findGist(token);
+      if (!gid){
+        const newId = await createGist(token, state);
+        setSyncCfg({ token, gistId: newId }); syncState.last = Date.now(); renderSyncBadge(); $('#syncDlg').close();
+        toast('동기화를 켰어요 · 이 기기 기록을 클라우드에 올렸어요'); dlLast = Date.now(); importDaylog(true);
+        return;
+      }
+      const remote = await readGist(token, gid);
+      const rc = remote.entries.length, lc = state.entries.length;
+      const when = remote.savedAt ? new Date(remote.savedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+      $('#syncChoice').innerHTML = `<p style="margin:14px 0 4px;font-weight:700">클라우드에 이미 기록이 있어요</p>
+        <p class="bmsg" style="margin:0">클라우드 ${rc}개${when ? ` (마지막 저장 ${when})` : ''} · 이 기기 ${lc}개</p>
+        <button type="button" class="choice" data-sc="remote"><b>클라우드 기록으로 바꾸기</b><small>새로 연결하는 기기(회사·폰)는 이걸 고르세요</small></button>
+        <button type="button" class="choice" data-sc="merge"><b>둘 다 합치기</b><small>두 기기에 각자 따로 남긴 기록이 있을 때</small></button>
+        <button type="button" class="choice" data-sc="local"><b>이 기기 기록으로 클라우드 덮어쓰기</b><small>클라우드 쪽 기록이 잘못됐을 때만</small></button>`;
+      $('#syncChoice').dataset.token = token; $('#syncChoice').dataset.gid = gid;
+      btn.hidden = true;
+    } catch(err){
+      btn.disabled = false; btn.textContent = '연결';
+      toast(err.message === 'token' ? '토큰이 맞지 않아요. gist 권한이 있는지 확인해주세요' : '연결에 실패했어요. 잠시 후 다시 해주세요');
+    }
+  }
+});
+$('#syncBody').addEventListener('click', async e => {
+  if (e.target.id === 'syncCopy'){ const c = syncCfg(); if (c) copy(c.token); return; }
+  const c = e.target.closest('[data-sc]'); if (!c) return;
+  const box = $('#syncChoice'), token = box.dataset.token, gid = box.dataset.gid, how = c.dataset.sc;
+  if (how === 'local' && !confirm('클라우드 기록을 이 기기 기록으로 덮어쓸까요? 다른 기기에서 한 기록이 사라질 수 있어요.')) return;
+  try {
+    const remote = await readGist(token, gid);
+    if (how === 'remote') state = migrate(remote);
+    else if (how === 'merge') state = migrate(mergeStates(state, remote));
+    state.savedAt = Date.now(); lsSet(KEY, JSON.stringify(state));
+    await writeGist(token, gid, state);
+    setSyncCfg({ token, gistId: gid }); syncState.last = Date.now(); syncState.err = '';
+    $('#syncDlg').close(); render(); renderSyncBadge();
+    dlLast = Date.now(); setTimeout(() => importDaylog(true), 2500);
+    toast({ remote: '클라우드 기록으로 바꿨어요', merge: '합쳐서 맞췄어요', local: '이 기기 기록으로 맞췄어요' }[how]);
+  } catch(_){ toast('실패했어요. 잠시 후 다시 해주세요'); }
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncNow(true); });
+setInterval(() => { if (document.visibilityState === 'visible') syncNow(true); }, 120000);
+
+/* ---------- 시작 ---------- */
+$$('.appVer').forEach(el => { el.textContent = APP_VERSION; });
+load(); applyTheme(); setView('seen'); renderHero(); renderStats(); renderSyncBadge(); renderRawgBadge(); syncNow(true);
+setTimeout(() => fillPosters(true), 4000);
+checkAddLink();
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+    reg.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(() => {});
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloaded) return;
+    if (document.querySelector('dialog[open]')){ toast('새 버전이 있어요. 창을 닫았다 열면 적용돼요'); return; }
+    reloaded = true; location.reload();
+  });
+}
+})();
+</script>
+</body>
+</html>
