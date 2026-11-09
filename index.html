@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>뉴게임플러스</title>
 <meta name="description" content="한 게임과 할 게임을 남기는 게임 기록">
-<meta name="theme-color" content="#efecfb" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0c0a1d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef2f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap">
 <style>
 :root{
   --bg:#0c0a1d; --bg-2:#151033; --surface:rgba(34,29,68,.55); --surface-solid:#1b1736; --surface-2:rgba(255,255,255,.06); --line:rgba(170,160,255,.16); --line-2:rgba(170,160,255,.28);
@@ -503,14 +505,157 @@ header{align-items:center;margin:6px 0 26px}
 .glyph.g4{left:6%;bottom:6%;width:110px;height:110px;transform:rotate(18deg)}
 @media (max-width:1180px){ .glyph.g2,.glyph.g3{display:none} }
 .hero .hours{color:var(--muted);font-size:13px;margin-left:2px}
+
+/* ===== v1.1 사이버 톤: 네온 시안 + 마젠타, HUD, 스캔라인 ===== */
+:root{
+  --bg:#05060d; --bg-2:#080a16; --surface:rgba(12,16,32,.78); --surface-solid:#0b0f1f; --surface-2:rgba(0,229,255,.06); --line:rgba(0,229,255,.16); --line-2:rgba(0,229,255,.34);
+  --text:#e8f7ff; --muted:#8fa6c7; --faint:#62779a;
+  --accent:#00e5ff; --accent-2:#ff2bd6; --accent-ink:#031018; --star:#ffd23f; --star-off:#1d2540; --low:#ff3d6e; --hi:#2bff9a;
+  --glow:rgba(0,229,255,.35); --glow-2:rgba(255,43,214,.3); --shadow:0 18px 50px rgba(0,0,0,.6);
+  --deco:.9; --radius:6px; --scan:.05;
+  --mono:"Chakra Petch","Pretendard Variable",Pretendard,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#eef2f9; --bg-2:#e2e8f4; --surface:rgba(255,255,255,.86); --surface-solid:#ffffff; --surface-2:rgba(0,120,170,.06); --line:rgba(10,40,90,.14); --line-2:rgba(0,140,190,.36);
+    --text:#0a1224; --muted:#45577a; --faint:#677797;
+    --accent:#008fb6; --accent-2:#cf0f9c; --accent-ink:#ffffff; --star:#d99a00; --star-off:#d7deea; --low:#d61f4c; --hi:#079c5b;
+    --glow:rgba(0,143,182,.22); --glow-2:rgba(207,15,156,.18); --shadow:0 14px 40px rgba(20,40,90,.12);
+    --deco:.55; --scan:0;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#eef2f9; --bg-2:#e2e8f4; --surface:rgba(255,255,255,.86); --surface-solid:#ffffff; --surface-2:rgba(0,120,170,.06); --line:rgba(10,40,90,.14); --line-2:rgba(0,140,190,.36);
+  --text:#0a1224; --muted:#45577a; --faint:#677797;
+  --accent:#008fb6; --accent-2:#cf0f9c; --accent-ink:#ffffff; --star:#d99a00; --star-off:#d7deea; --low:#d61f4c; --hi:#079c5b;
+  --glow:rgba(0,143,182,.22); --glow-2:rgba(207,15,156,.18); --shadow:0 14px 40px rgba(20,40,90,.12);
+  --deco:.55; --scan:0;
+}
+:root[data-theme="dark"]{
+  --bg:#05060d; --bg-2:#080a16; --surface:rgba(12,16,32,.78); --surface-solid:#0b0f1f; --surface-2:rgba(0,229,255,.06); --line:rgba(0,229,255,.16); --line-2:rgba(0,229,255,.34);
+  --text:#e8f7ff; --muted:#8fa6c7; --faint:#62779a;
+  --accent:#00e5ff; --accent-2:#ff2bd6; --accent-ink:#031018; --star:#ffd23f; --star-off:#1d2540; --low:#ff3d6e; --hi:#2bff9a;
+  --glow:rgba(0,229,255,.35); --glow-2:rgba(255,43,214,.3); --shadow:0 18px 50px rgba(0,0,0,.6);
+  --deco:.9; --scan:.05;
+}
+
+body{background:
+  radial-gradient(700px 420px at 8% -8%, var(--glow-2), transparent 60%),
+  radial-gradient(800px 520px at 100% 12%, var(--glow), transparent 62%),
+  linear-gradient(180deg,var(--bg),var(--bg-2)) fixed}
+/* 스캔라인 */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:40;opacity:var(--scan);
+  background:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}
+/* 바닥 격자 */
+.deco::before{content:"";position:absolute;left:-20%;right:-20%;bottom:-8%;height:46%;
+  background:
+    linear-gradient(color-mix(in srgb,var(--accent) 28%,transparent) 1px,transparent 1px) 0 0/100% 44px,
+    linear-gradient(90deg,color-mix(in srgb,var(--accent) 28%,transparent) 1px,transparent 1px) 0 0/44px 100%;
+  transform:perspective(420px) rotateX(62deg);transform-origin:bottom;
+  -webkit-mask:linear-gradient(transparent,#000 70%);mask:linear-gradient(transparent,#000 70%);opacity:.5}
+/* 패드 버튼 네온 (△ 초록, ○ 빨강, × 파랑, □ 분홍) */
+.glyph{stroke-width:4;opacity:.5}
+.glyph.g1{stroke:#2bff9a;filter:drop-shadow(0 0 8px #2bff9a)}
+.glyph.g2{stroke:#ff3d6e;filter:drop-shadow(0 0 8px #ff3d6e)}
+.glyph.g3{stroke:#00b3ff;filter:drop-shadow(0 0 8px #00b3ff)}
+.glyph.g4{stroke:#ff6bd5;filter:drop-shadow(0 0 8px #ff6bd5)}
+:root[data-theme="light"] .glyph{opacity:.35;filter:none}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .glyph{opacity:.35;filter:none} }
+
+/* 글자 */
+.brand h1{font-family:var(--mono);font-weight:700;letter-spacing:.01em;text-shadow:-1px 0 color-mix(in srgb,var(--accent-2) 70%,transparent),1px 0 color-mix(in srgb,var(--accent) 70%,transparent)}
+.brand h1 span{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--accent);text-shadow:0 0 14px var(--glow)}
+.brand .tagline{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent-2) 50%,transparent);padding:2px 7px;border-radius:3px;margin-left:2px}
+.brand p{border-left-color:var(--line-2)}
+.kpi .v,.sc,.stats-line b,.tab em,.sval,.hero .by,.card .meta,.card .title .yr,.vlabels span,.hbar .n,.rank-row .no,.ver b,.credit b{font-family:var(--mono)}
+
+/* 모서리를 깎은 HUD 패널 */
+.hero,.card,.st-card,.kpis,.stats-line,.sheet,.menu,.empty-box{border-radius:var(--radius)}
+.hero{border-color:var(--line-2);border-radius:8px;
+  box-shadow:var(--shadow),0 0 0 1px color-mix(in srgb,var(--accent) 10%,transparent),inset 0 0 60px color-mix(in srgb,var(--accent) 6%,transparent)}
+.hero::after{content:"";position:absolute;inset:8px;pointer-events:none;
+  --c:var(--accent); --l:18px;
+  background:
+    linear-gradient(var(--c),var(--c)) top left/var(--l) 2px no-repeat,linear-gradient(var(--c),var(--c)) top left/2px var(--l) no-repeat,
+    linear-gradient(var(--c),var(--c)) top right/var(--l) 2px no-repeat,linear-gradient(var(--c),var(--c)) top right/2px var(--l) no-repeat,
+    linear-gradient(var(--accent-2),var(--accent-2)) bottom left/var(--l) 2px no-repeat,linear-gradient(var(--accent-2),var(--accent-2)) bottom left/2px var(--l) no-repeat,
+    linear-gradient(var(--accent-2),var(--accent-2)) bottom right/var(--l) 2px no-repeat,linear-gradient(var(--accent-2),var(--accent-2)) bottom right/2px var(--l) no-repeat}
+.hero .eyebrow{border-radius:3px;background:color-mix(in srgb,var(--accent) 12%,transparent);border-color:var(--line-2);color:var(--accent);font-family:var(--mono);letter-spacing:.04em}
+.hero .poster.lg,.poster.lg{border-radius:6px}
+.hero .poster.lg{box-shadow:0 0 0 1px var(--accent),0 0 28px var(--glow),0 0 60px var(--glow-2)}
+.poster{border-radius:4px}
+.poster.sm{border-radius:4px}
+.quote{border-radius:4px;border:1px solid var(--line);border-left:3px solid var(--accent-2);background:color-mix(in srgb,var(--surface-solid) 75%,transparent)}
+.quote::before,.quote::after{color:var(--accent-2)}
+.hint-pill{border-radius:3px;font-family:var(--mono)}
+
+.stats-line{border-radius:4px;border-color:var(--line);background:color-mix(in srgb,var(--surface-solid) 70%,transparent)}
+.stats-line .yr{font-family:var(--mono);letter-spacing:.04em;border-right-color:var(--line-2)}
+.stats-line .ico-a{color:var(--accent)}
+
+/* 탭 */
+.tab{font-family:var(--mono);letter-spacing:.02em}
+.tab::after{background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 0 12px var(--glow)}
+.tab[aria-selected="true"]{color:var(--text);text-shadow:0 0 12px var(--glow)}
+
+/* 버튼·알약 */
+.btn,.icon-btn{border-radius:5px}
+.btn.primary,.fab,.pill[aria-pressed="true"],.seg-mini button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent;box-shadow:0 0 16px var(--glow)}
+@media (hover:hover) and (pointer:fine){ .btn.primary:hover{background:var(--accent);filter:brightness(1.1)} .btn:hover{background:color-mix(in srgb,var(--accent) 10%,var(--surface-solid))} }
+.pill[aria-pressed="true"] em,.pill[aria-pressed="true"] svg{color:var(--accent-ink)}
+.pill{border-radius:4px;font-family:var(--mono)}
+.pill i.dot{box-shadow:0 0 6px var(--tc)}
+.seg-mini{border-radius:5px}
+.seg-mini button{border-radius:3px}
+.tools .in,.tools .search .in{border-radius:5px}
+.in{border-radius:5px}
+.seg button{border-radius:4px}
+.seg button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--accent) 25%,transparent)}
+.fab{border-radius:10px;width:60px;height:60px;transform:rotate(45deg);box-shadow:0 0 0 1px var(--accent),0 0 24px var(--glow),0 0 48px var(--glow-2)}
+.fab svg{transform:rotate(-45deg)}
+.fab:active{transform:rotate(45deg) scale(.94)}
+@media (prefers-reduced-motion:reduce){ .fab:active{transform:rotate(45deg)} }
+
+/* 카드 */
+.card{border-radius:6px;position:relative}
+@media (hover:hover) and (pointer:fine){ .card:hover{border-color:var(--line-2);background:color-mix(in srgb,var(--accent) 5%,var(--surface));box-shadow:inset 3px 0 0 var(--accent),0 0 22px color-mix(in srgb,var(--accent) 12%,transparent)} }
+.card .title{letter-spacing:-.005em}
+
+/* 점수: 모서리 깎은 배지 */
+.sc{border-radius:0;clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);box-shadow:none;color:#031018}
+.sc.xs{clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.sc.lg{clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.sc.lo{color:#fff}
+.sc.none{clip-path:none;border-radius:6px;color:var(--faint)}
+.hero .score .sc.lg{box-shadow:none;filter:none}
+.hero .score{filter:drop-shadow(0 0 12px var(--glow))}
+
+/* 슬라이더 */
+.score-input{border-radius:5px}
+.sbar .track{border-radius:2px}
+.sbar .knob{border-radius:3px;transform:rotate(45deg);width:18px;height:18px;margin:-9px 0 0 -9px;box-shadow:0 0 0 2px var(--bc,var(--accent)),0 0 14px var(--bc,var(--accent))}
+.sbar:focus-visible .knob{box-shadow:0 0 0 2px var(--bc,var(--accent)),0 0 0 6px color-mix(in srgb,var(--accent) 35%,transparent)}
+.score-presets button{border-radius:3px;font-family:var(--mono)}
+
+/* 통계 */
+.vbar i{background:linear-gradient(180deg,var(--accent-2),var(--accent));border-radius:2px 2px 0 0;box-shadow:0 0 10px var(--glow)}
+.hbar .track{border-radius:2px}
+.hbar .track b{background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:2px}
+.kpi .v{color:var(--text);text-shadow:0 0 14px var(--glow)}
+.rank-row:first-child .no{color:var(--accent)}
+.rw{color:var(--hi)}
+.tip{border-radius:3px;font-family:var(--mono)}
+.toast{border-radius:4px;background:var(--surface-solid);color:var(--text);border:1px solid var(--accent);box-shadow:0 0 18px var(--glow)}
+dialog::backdrop{background:rgba(2,4,10,.7)}
+@media (max-width:760px){ .brand .tagline{display:none} .brand h1{white-space:nowrap} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="brand">
-      <svg class="logo" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9a8ff"/><stop offset="1" stop-color="#6a4cf0"/></linearGradient></defs><path d="M11.5 11h17c4.3 0 7.4 3.3 8 7.6l1 7.6c.5 3.6-3.6 5.9-6.3 3.5L27 26H13l-4.2 3.7c-2.7 2.4-6.8.1-6.3-3.5l1-7.6c.6-4.3 3.7-7.6 8-7.6z" fill="url(#lg1)"/><path d="M12 16.5v6M9 19.5h6" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/><circle cx="27.5" cy="17" r="1.8" fill="#fff"/><circle cx="31" cy="20.5" r="1.8" fill="#fff" opacity=".8"/><path d="M20 4.5v4.2M17.9 6.6h4.2" stroke="#a996ff" stroke-width="2" stroke-linecap="round"/></svg>
-      <h1>뉴게임<span>플러스</span></h1>
+      <svg class="logo" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00e5ff"/><stop offset="1" stop-color="#ff2bd6"/></linearGradient></defs><path d="M11.5 11h17c4.3 0 7.4 3.3 8 7.6l1 7.6c.5 3.6-3.6 5.9-6.3 3.5L27 26H13l-4.2 3.7c-2.7 2.4-6.8.1-6.3-3.5l1-7.6c.6-4.3 3.7-7.6 8-7.6z" fill="url(#lg1)"/><path d="M12 16.5v6M9 19.5h6" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/><circle cx="27.5" cy="17" r="1.8" fill="#fff"/><circle cx="31" cy="20.5" r="1.8" fill="#fff" opacity=".8"/><path d="M20 4.5v4.2M17.9 6.6h4.2" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"/></svg>
+      <h1>뉴게임<span>플러스</span></h1><span class="tagline">NEW GAME+</span>
       <p>깬 게임은 점수와 한 줄로, 할 게임은 잊기 전에</p>
     </div>
     <div class="head-btns">
@@ -576,7 +721,7 @@ header{align-items:center;margin:6px 0 26px}
   <div class="empty-box" id="empty" hidden></div>
   </div>
   <div id="statsView" hidden></div>
-  <p class="credit"><b class="appVer"></b> · 게임 정보와 배경: <a href="https://rawg.io" target="_blank" rel="noopener" style="color:inherit">RAWG</a> · 세로 표지: Steam</p>
+  <p class="credit"><b class="appVer"></b> · 게임 정보: <a href="https://www.wikidata.org" target="_blank" rel="noopener" style="color:inherit">Wikidata</a> · <a href="https://rawg.io" target="_blank" rel="noopener" style="color:inherit">RAWG</a> · 세로 표지: Steam</p>
 </div>
 
 <button class="fab" id="addBtn" aria-label="기록하기"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -680,7 +825,7 @@ header{align-items:center;margin:6px 0 26px}
   <form class="sheet" id="rawgForm" method="dialog" novalidate>
     <div class="sheet-hd"><h3>표지 설정</h3></div>
     <div class="sheet-bd">
-      <p style="margin:4px 0 0;line-height:1.6;color:var(--muted);font-size:14px">RAWG에서 제목으로 게임을 찾아 표지와 배경을 붙여요. 스팀에 있는 게임은 세로 표지를, 없으면 RAWG 대표 이미지를 써요. 기기마다 처음 한 번만 키를 넣으면 돼요.</p>
+      <p style="margin:4px 0 0;line-height:1.6;color:var(--muted);font-size:14px">스팀에 있는 게임은 키 없이도 세로 표지가 붙어요. RAWG 키는 스팀에 없는 게임(닌텐도 독점 등)의 대표 이미지와 배경을 붙일 때만 필요해요. 기기마다 처음 한 번만 넣으면 돼요.</p>
       <ol style="margin:12px 0 0;padding-left:20px;font-size:14px;line-height:1.7">
         <li><a href="https://rawg.io/apidocs" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">RAWG API 페이지 열기 ↗</a> → <b>Get API Key</b> (무료 가입)</li>
         <li>발급된 <b>API 키</b>(32자리)를 복사</li>
@@ -719,12 +864,12 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.0'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 */
+const APP_VERSION = 'v1.1'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
 const placeColor = p => (PLACES.find(x => x[0] === p) || [,'#868f97'])[1];
-const POSTER = ['#3b5b92','#5b4b8a','#2f6f6a','#8a3b4b','#44546a','#6a4b8a','#2d6a8a','#7a4a6a','#35606f','#5a5f8a'];
+const POSTER = ['#0f4c5c','#5a1a54','#13315c','#3d1a6e','#0b5345','#6b1d3f','#1d3557','#4a1259','#0d4f6b','#26215c'];
 const posterColor = t => { let h = 0; for (const c of t) h = (h*31 + c.charCodeAt(0)) >>> 0; return POSTER[h % POSTER.length]; };
 /* 점수 구간 — 메타크리틱처럼 75+ 초록, 50~74 노랑, 49 이하 빨강 */
 const band = v => !v ? 'none' : v >= 75 ? 'hi' : v >= 50 ? 'mid' : 'lo';
@@ -765,16 +910,24 @@ function normEntry(raw){
     hours: Math.max(0, Math.min(99999, Math.round((+raw.hours || 0)*10)/10)),
     line: String(raw.line || ''), note: String(raw.note || ''), memo: String(raw.memo || ''),
     date: String(raw.date || ''), where: PLACES.some(p => p[0] === raw.where) ? raw.where : '',
-    rawgId: +raw.rawgId || 0, steam: +raw.steam || 0, bg: BG_RE.test(raw.bg || '') ? raw.bg : '',
+    wd: /^Q\d+$/.test(raw.wd || '') ? raw.wd : '', rawgId: +raw.rawgId || 0, steam: +raw.steam || 0, bg: BG_RE.test(raw.bg || '') ? raw.bg : '',
     createdAt: +raw.createdAt || Date.now(), updatedAt: +raw.updatedAt || Date.now()
   };
 }
 function migrate(s){
   if (Array.isArray(s)) s = { entries: s };
   s = s && typeof s === 'object' ? s : {};
-  return { entries: (s.entries || []).map(normEntry).filter(Boolean), deleted: s.deleted || {}, dlSeen: s.dlSeen || {}, savedAt: +s.savedAt || 0 };
+  return { entries: (s.entries || []).map(normEntry).filter(Boolean), deleted: s.deleted || {}, dlSeen: s.dlSeen || {}, coverV: +s.coverV || 0, savedAt: +s.savedAt || 0 };
 }
-function load(){ try { state = migrate(JSON.parse(lsGet(KEY) || 'null')); } catch(_){ state = migrate(null); } }
+function load(){
+  try { state = migrate(JSON.parse(lsGet(KEY) || 'null')); } catch(_){ state = migrate(null); }
+  /* v1.1: v1.0 때 RAWG로 붙은 표지는 한글 제목에서 엉뚱하게 붙었다 — 한 번 비우고 Wikidata로 다시 찾는다 */
+  if (state.coverV < 2){
+    const now = Date.now();
+    state.entries.forEach(e => { if (!e.wd && (e.bg || e.steam)){ e.bg = ''; e.steam = 0; e.rawgId = 0; e.updatedAt = now; } });
+    state.coverV = 2; lsSet(KEY, JSON.stringify(state));
+  }
+}
 function save(){
   state.savedAt = Date.now();
   if (!lsSet(KEY, JSON.stringify(state))) toast('이 브라우저에 저장이 안 돼요. 백업 파일로 챙겨 두세요');
@@ -822,11 +975,11 @@ async function rawg(path, params, key = rawgKey()){
   if (r.status === 401 || r.status === 403) throw new Error('key'); if (!r.ok) throw new Error('http');
   return r.json();
 }
-async function searchGames(q, year){
+async function rawgSearch(q, year){
   const base = { search: q, page_size: 10, search_precise: 'true' };
   let res = (await rawg('/games', { ...base, dates: year ? `${year}-01-01,${year}-12-31` : '' })).results || [];
   if (!res.length && year) res = (await rawg('/games', base)).results || [];
-  return res.slice(0, 10).map(m => ({ id: m.id, title: m.name || '', year: (m.released || '').slice(0, 4), bg: BG_RE.test(m.background_image || '') ? m.background_image : '', steam: 0 }));
+  return res.slice(0, 10).map(m => ({ id: m.id, title: m.name || '', en: m.name || '', year: (m.released || '').slice(0, 4), bg: BG_RE.test(m.background_image || '') ? m.background_image : '', steam: 0 }));
 }
 async function steamOf(id){
   try {
@@ -835,16 +988,54 @@ async function steamOf(id){
   } catch(_){}
   return 0;
 }
-const pickKey = m => m ? 'rawg:' + m.id : '';
+/* ---------- Wikidata: 한글 제목으로 게임 찾기 ----------
+   RAWG는 한글 제목을 못 알아듣는다. Wikidata는 한글·영문 제목, 출시일, 스팀 번호를 함께 준다 (키 없음). */
+const WD = 'https://www.wikidata.org/w/api.php?format=json&origin=*&';
+const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+const GAME_TYPES = new Set(['Q7889', 'Q865493', 'Q21125433', 'Q4393107', 'Q209163', 'Q111223304', 'Q64170203']);
+async function wdSearch(q, lang){
+  const d = await fetch(WD + `action=wbsearchentities&search=${encodeURIComponent(q)}&language=${lang}&uselang=ko&type=item&limit=8`).then(r => r.json());
+  return (d.search || []).map(x => x.id);
+}
+async function wikidataGames(q, year){
+  const vars = [q]; const r = q.replace(/\b(10|[1-9])\b/g, n => ROMAN[+n]); if (r !== q) vars.push(r);
+  const lists = await Promise.all(vars.flatMap(v => [wdSearch(v, 'ko'), wdSearch(v, 'en')]));
+  const ids = [...new Set(lists.flat())].slice(0, 20); if (!ids.length) return [];
+  const d = await fetch(WD + `action=wbgetentities&ids=${ids.join('|')}&props=labels|claims&languages=ko|en|mul`).then(r => r.json());
+  const out = [];
+  ids.forEach(id => {
+    const x = d.entities && d.entities[id]; if (!x) return;
+    const c = x.claims || {}; const v = p => (c[p] || []).map(z => z.mainsnak && z.mainsnak.datavalue && z.mainsnak.datavalue.value).filter(Boolean);
+    const isGame = v('P31').some(o => GAME_TYPES.has(o.id)) || v('P1733').length;
+    if (!isGame) return;
+    const L = x.labels || {}; const ko = (L.ko || {}).value, en = (L.en || L.mul || {}).value;
+    const dates = v('P577').map(t => String(t.time || '').slice(1, 5)).filter(y => /^\d{4}$/.test(y)).sort();
+    out.push({ wd: id, id: 0, title: ko || en || '', en: en || ko || '', year: dates[0] || '', steam: +v('P1733')[0] || 0, bg: '' });
+  });
+  if (year) out.sort((a, b) => (b.year === year) - (a.year === year));
+  return out.filter(m => m.title).slice(0, 10);
+}
+/* 스팀에 없는 게임(닌텐도 독점 등)은 영문 제목으로 RAWG 대표 이미지를 찾는다 — RAWG 키가 있을 때만 */
+async function rawgBgFor(m){
+  if (!rawgKey() || m.steam || m.bg || !m.en) return;
+  try { const t = normT(m.en); const hit = (await rawgSearch(m.en, m.year)).find(r => r.bg && normT(r.title) === t) || null; if (hit){ m.bg = hit.bg; m.id = hit.id; } } catch(_){}
+}
+async function searchGames(q, year){
+  let list = [];
+  try { list = await wikidataGames(q, year); } catch(_){}
+  if (!list.length && rawgKey() && !hasHangul(q)) list = await rawgSearch(q, year);
+  else await Promise.all(list.slice(0, 6).map(rawgBgFor));
+  return list;
+}
+const pickKey = m => m ? (m.wd ? 'wd:' + m.wd : 'rawg:' + m.id) : '';
 function bestMatch(e, list){
   const t = normT(e.title);
-  const same = list.filter(m => m.bg && normT(m.title) === t);
+  const same = list.filter(m => (m.steam || m.bg) && (normT(m.title) === t || normT(m.en) === t));
   if (!same.length) return null;
   return (e.year && same.find(m => m.year === e.year)) || (same.length === 1 ? same[0] : null);
 }
 let filling = false; const triedPoster = new Set();
 async function fillPosters(quiet = true){
-  if (!rawgKey()){ if (!quiet) openRawg(); return; }
   if (filling) return; filling = true;
   const targets = state.entries.filter(e => !e.bg && !e.steam && (!quiet || !triedPoster.has(e.id)));
   let got = 0, miss = 0;
@@ -852,7 +1043,7 @@ async function fillPosters(quiet = true){
     for (const e of targets){
       triedPoster.add(e.id);
       const m = bestMatch(e, await searchGames(e.title, e.year));
-      if (m){ e.rawgId = m.id; e.bg = m.bg; e.steam = await steamOf(m.id); if (!e.year && m.year) e.year = m.year; e.updatedAt = Date.now(); got++; } else miss++;
+      if (m){ if (!m.wd && !m.steam && m.id) m.steam = await steamOf(m.id); e.wd = m.wd || ''; e.rawgId = m.id || 0; e.bg = m.bg; e.steam = m.steam; if (!e.year && m.year) e.year = m.year; e.updatedAt = Date.now(); got++; } else miss++;
     }
   } catch(err){
     if (!quiet) toast(err.message === 'key' ? 'RAWG 키가 맞지 않아요. 표지 설정을 확인해 주세요' : '표지를 찾지 못했어요. 잠시 후 다시 해주세요');
@@ -1238,7 +1429,7 @@ function openForm(id, mode, convert){
   setWhere(e ? e.where : (place !== 'all' ? place : ''));
   setScore(e && !converting ? e.rating : 0);
   btnDel.hidden = !e || converting; disarm();
-  picked = e && (e.bg || e.steam) ? { id: e.rawgId, title: e.title, year: e.year, bg: e.bg, steam: e.steam } : null;
+  picked = e && (e.bg || e.steam) ? { wd: e.wd, id: e.rawgId, title: e.title, en: '', year: e.year, bg: e.bg, steam: e.steam } : null;
   renderPicks(picked ? [picked] : []);
   if (e && !e.bg && !e.steam) searchPicks();
   $('#fTitle').style.borderColor = '';
@@ -1251,7 +1442,7 @@ form.addEventListener('submit', ev => {
   if (!title){ $('#fTitle').style.borderColor = 'var(--low)'; $('#fTitle').focus(); return; }
   const now = Date.now();
   const base = { title, year: $('#fYear').value.replace(/\D/g,'').slice(0,4), where,
-    rawgId: picked ? picked.id : 0, steam: picked ? picked.steam || 0 : 0, bg: picked ? picked.bg || '' : '', updatedAt: now };
+    wd: picked ? picked.wd || '' : '', rawgId: picked ? picked.id || 0 : 0, steam: picked ? picked.steam || 0 : 0, bg: picked ? picked.bg || '' : '', updatedAt: now };
   const date = $('#fDate').value, hours = Math.max(0, Math.min(99999, Math.round(parseHours($('#fHours').value)*10)/10));
   const data = formMode === 'want' ? { ...base, status: 'want', memo: $('#fMemo').value.trim() }
     : formMode === 'watching' ? { ...base, status: 'watching', memo: $('#fMemo').value.trim(), date, hours }
@@ -1287,14 +1478,14 @@ function renderPicks(list){
       picked = pickKey(picked) === pickKey(m) ? null : m;
       if (picked){
         const cur = $('#fTitle').value.trim();
-        if (!hasHangul(cur)) $('#fTitle').value = m.title; /* 한글로 적은 제목은 그대로 둔다 */
+        if (hasHangul(m.title) || !hasHangul(cur)) $('#fTitle').value = m.title; /* 한글로 적은 제목을 영문으로 덮지 않는다 */
         if (m.year) $('#fYear').value = m.year; $('#fTitle').style.borderColor = '';
       }
       box.querySelectorAll('.pick').forEach(x => x.setAttribute('aria-pressed', 'false'));
       if (picked) b.setAttribute('aria-pressed', 'true');
       updatePickMsg(list.length);
-      /* 스팀에 있으면 세로 표지로 바꿔 끼운다 */
-      if (picked && m.id && !m.steam && !m.steamTried){
+      /* RAWG에서 고른 게임은 스팀에 있으면 세로 표지로 바꿔 끼운다 */
+      if (picked && !m.wd && m.id && !m.steam && !m.steamTried){
         m.steamTried = true; m.steam = await steamOf(m.id);
         if (m.steam){ const old = b.querySelector('.ph'); if (old) old.replaceWith(pickThumb(m)); }
       }
@@ -1304,9 +1495,8 @@ function renderPicks(list){
   updatePickMsg(list.length);
 }
 function updatePickMsg(n){
-  if (!rawgKey()){ pickMsg('표지를 붙이려면 <button type="button" data-rawg>RAWG 키 넣기</button>'); return; }
   if (picked) pickMsg('표지를 골랐어요 · <button type="button" data-unpick>빼기</button> · <button type="button" data-research>다른 표지 찾기</button>');
-  else if (n) pickMsg('맞는 게임을 누르면 표지와 연도가 채워져요');
+  else if (n) pickMsg('맞는 게임을 누르면 표지와 연도가 채워져요' + (rawgKey() ? '' : ' · 스팀에 없는 게임 표지는 <button type="button" data-rawg>RAWG 키</button>가 있어야 붙어요'));
   else pickMsg('');
 }
 $('#pickMsg').addEventListener('click', e => {
@@ -1316,7 +1506,7 @@ $('#pickMsg').addEventListener('click', e => {
 });
 async function searchPicks(){
   const q = $('#fTitle').value.trim(), seq = ++pickSeq;
-  if (!rawgKey() || q.length < 1){ renderPicks(picked ? [picked] : []); return; }
+  if (q.length < 1){ renderPicks(picked ? [picked] : []); return; }
   pickMsg('찾는 중…');
   let list;
   try { list = await searchGames(q, $('#fYear').value.trim()); }
@@ -1325,7 +1515,7 @@ async function searchPicks(){
   if (picked && !list.some(m => pickKey(m) === pickKey(picked))) list.unshift(picked);
   else if (picked) list = list.map(m => pickKey(m) === pickKey(picked) ? picked : m);
   renderPicks(list);
-  if (!list.length) pickMsg(hasHangul(q) ? 'RAWG는 한글 제목을 잘 못 찾아요. 영문 제목으로 찾아보세요 (고른 뒤 한글로 바꿔도 돼요)' : 'RAWG에서 못 찾았어요. 표지 없이 저장돼요');
+  if (!list.length) pickMsg('못 찾았어요. 정식 제목이나 영문 제목으로 찾아보세요 (표지 없이 저장해도 돼요)');
 }
 $('#fTitle').addEventListener('input', () => { clearTimeout(pickT); pickT = setTimeout(searchPicks, 450); });
 $('#fYear').addEventListener('change', () => { if ($('#fTitle').value.trim()) searchPicks(); });
@@ -1338,7 +1528,7 @@ $('#rawgForm').addEventListener('submit', async ev => {
   try {
     await rawg('/games', { page_size: 1 }, key);
     lsSet(RAWG_KEY, key); renderRawgBadge(); $('#rawgDlg').close(); toast('표지 설정을 켰어요');
-    if (editDlg.open) searchPicks(); else fillPosters(true);
+    if (editDlg.open) searchPicks(); else { triedPoster.clear(); fillPosters(true); }
   } catch(err){
     $('#rawgMsg').textContent = err.message === 'key' ? '키가 맞지 않아요. RAWG에서 받은 API 키를 다시 복사해 주세요' : '확인하지 못했어요. 인터넷 연결을 확인해 주세요';
   } finally { btn.disabled = false; btn.textContent = '저장'; }
@@ -1532,7 +1722,7 @@ function mergeStates(a, b){
   [...(a.entries || []), ...(b.entries || [])].forEach(x => { const cur = map.get(x.id); if (!cur || (x.updatedAt || 0) > (cur.updatedAt || 0)) map.set(x.id, x); });
   const entries = [...map.values()].filter(x => !(deleted[x.id] && deleted[x.id] >= (x.updatedAt || 0)));
   const dlSeen = Object.assign({}, b.dlSeen || {}, a.dlSeen || {});
-  return { entries, deleted, dlSeen, savedAt: Math.max(a.savedAt || 0, b.savedAt || 0) };
+  return { entries, deleted, dlSeen, coverV: Math.max(a.coverV || 0, b.coverV || 0), savedAt: Math.max(a.savedAt || 0, b.savedAt || 0) };
 }
 const sigOf = st => JSON.stringify({ e: [...(st.entries || [])].sort((x,y) => x.id < y.id ? -1 : 1), d: st.deleted || {}, s: Object.keys(st.dlSeen || {}).sort() });
 
