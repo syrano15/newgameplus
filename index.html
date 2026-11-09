@@ -1015,7 +1015,10 @@ async function wikidataGames(q, year){
     const isGame = v('P31').some(o => GAME_TYPES.has(o.id)) || v('P1733').length;
     if (!isGame) return;
     const L = x.labels || {}; const ko = (L.ko || {}).value, en = (L.en || L.mul || {}).value;
-    const dates = v('P577').map(t => String(t.time || '').slice(1, 5)).filter(y => /^\d{4}$/.test(y)).sort();
+    /* 출시일이 여럿이면(얼리 액세스·지역별) '대표'로 표시된 날짜를 먼저 쓴다 */
+    const pd = (c.P577 || []).filter(z => z.mainsnak && z.mainsnak.datavalue);
+    const pref = pd.filter(z => z.rank === 'preferred');
+    const dates = (pref.length ? pref : pd).map(z => String(z.mainsnak.datavalue.value.time || '').slice(1, 5)).filter(y => /^\d{4}$/.test(y)).sort();
     out.push({ wd: id, id: 0, title: ko || en || '', en: en || ko || '', year: dates[0] || '', steam: +v('P1733')[0] || 0, bg: '' });
   });
   if (year) out.sort((a, b) => (b.year === year) - (a.year === year));
