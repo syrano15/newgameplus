@@ -722,6 +722,14 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:4
 .imgprev{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:13px;color:var(--muted)}
 .imgprev .ph{width:160px;aspect-ratio:16/9;object-fit:cover;border-radius:5px;border:1px solid var(--line-2);flex:none}
 .imgprev button{border:0;background:none;color:var(--accent);font-weight:700;cursor:pointer;padding:0}
+
+/* v1.6 한 게임 카드: 점수를 크게 */
+.sc.xl{width:84px;height:84px;font-size:38px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}
+.card .side{align-items:center;min-width:96px}
+.card .side .shint{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.card .sub.note{color:var(--muted);opacity:1;-webkit-line-clamp:3;font-size:15px}
+.hero .score .sc.lg{width:76px;height:76px;font-size:34px;clip-path:polygon(15px 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,0 100%,0 15px)}
+@media (max-width:760px){ .sc.xl{width:64px;height:64px;font-size:28px} .card .side{min-width:70px} }
 </style>
 </head>
 <body>
@@ -772,7 +780,7 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:4
   <div class="places" id="places" role="group" aria-label="기기"></div>
 
   <div class="tools">
-    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><input class="in" id="q" type="search" placeholder="제목·한줄평 검색" autocomplete="off"></label>
+    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><input class="in" id="q" type="search" placeholder="제목·감상 검색" autocomplete="off"></label>
     <div class="seg-mini" id="resFilter" role="group" aria-label="결말">
       <button data-r="all" aria-pressed="true">전체</button>
       <button data-r="clear" aria-pressed="false">엔딩 봄</button>
@@ -943,7 +951,7 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.5'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 */
+const APP_VERSION = 'v1.6'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 · v1.6 같은 게임 합치기·점수 크게 */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['Xbox','#4CA860'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
@@ -996,7 +1004,7 @@ function normEntry(raw){
 function migrate(s){
   if (Array.isArray(s)) s = { entries: s };
   s = s && typeof s === 'object' ? s : {};
-  return { entries: (s.entries || []).map(normEntry).filter(Boolean), deleted: s.deleted || {}, dlSeen: s.dlSeen || {}, coverV: +s.coverV || 0, savedAt: +s.savedAt || 0 };
+  return { entries: (s.entries || []).map(normEntry).filter(Boolean), deleted: s.deleted || {}, dlSeen: s.dlSeen || {}, alias: s.alias || {}, coverV: +s.coverV || 0, savedAt: +s.savedAt || 0 };
 }
 function load(){
   try { state = migrate(JSON.parse(lsGet(KEY) || 'null')); } catch(_){ state = migrate(null); }
@@ -1127,6 +1135,31 @@ function bestMatch(e, list){
   if (!same.length) return null;
   return (e.year && same.find(m => m.year === e.year)) || (same.length === 1 ? same[0] : null);
 }
+/* 같은 게임 합치기 — 제목이 달라도(dispatch / 디스패치) 같은 Wikidata·스팀 번호면 같은 게임이다.
+   데이로그에서 들어온 기록만 직접 쓴 기록에 합친다 (직접 쓴 기록끼리는 건드리지 않음).
+   합친 제목은 alias 에 남겨서, 데이로그가 그 게임을 끝내면 남은 기록으로 올려 준다. */
+const fromDaylog = e => (e.memo || '').startsWith('데이로그');
+function mergeDupes(){
+  const groups = new Map();
+  state.entries.forEach(e => { const k = e.wd ? 'wd:' + e.wd : e.steam ? 'st:' + e.steam : ''; if (k){ if (!groups.has(k)) groups.set(k, []); groups.get(k).push(e); } });
+  const now = Date.now(); let n = 0; state.alias = state.alias || {};
+  groups.forEach(list => {
+    if (list.length < 2) return;
+    const keep = list.find(e => !fromDaylog(e)) || list.slice().sort((a, b) => a.createdAt - b.createdAt)[0];
+    list.forEach(o => {
+      if (o === keep || !fromDaylog(o)) return;
+      if (DL_RANK[statusOf(o)] > DL_RANK[statusOf(keep)]){ keep.status = o.status; if (o.status === 'seen') keep.result = o.result; if (o.date) keep.date = o.date; }
+      if (!keep.date && o.date) keep.date = o.date;
+      if (!keep.where && o.where) keep.where = o.where;
+      if (!keep.year && o.year) keep.year = o.year;
+      if (!keep.hours && o.hours) keep.hours = o.hours;
+      keep.updatedAt = now;
+      state.alias[normT(o.title)] = keep.id;
+      state.entries = state.entries.filter(x => x !== o); state.deleted[o.id] = now; n++;
+    });
+  });
+  return n;
+}
 let filling = false; const triedPoster = new Set();
 async function fillPosters(quiet = true){
   if (filling) return; filling = true;
@@ -1143,7 +1176,7 @@ async function fillPosters(quiet = true){
     filling = false; if (got){ save(); render(); } return;
   }
   filling = false;
-  if (got){ save(); render(); }
+  if (got){ mergeDupes(); save(); render(); }
   if (got || !quiet) toast(!targets.length ? '표지가 비어 있는 기록이 없어요'
     : `표지 ${got}개를 붙였어요` + (miss ? ` · ${miss}개는 수정에서 직접 골라 주세요` : ''));
 }
@@ -1164,7 +1197,7 @@ function visible(){
   const q = query.trim().toLowerCase();
   const arr = state.entries.filter(e => {
     if (statusOf(e) !== view) return false;
-    if (q && ![e.title, e.line, e.memo].some(s => (s||'').toLowerCase().includes(q))) return false;
+    if (q && ![e.title, e.line, e.note, e.memo].some(s => (s||'').toLowerCase().includes(q))) return false;
     if (view !== 'seen') return true;
     if (place !== 'all' && e.where !== place) return false;
     if (resF !== 'all' && e.result !== resF) return false;
@@ -1213,7 +1246,6 @@ function renderHero(){
   info.querySelector('.by').textContent = [e.year, e.where, lastDate(e) && dot(lastDate(e)) + (e.result === 'drop' ? ' 접음' : ' 클리어'), hrs(e.hours), e.rewatches.length && `${e.rewatches.length + 1}회차`].filter(Boolean).join(' · ');
   const sc = info.querySelector('.score'); sc.append(makeScore(e.rating, 'lg'));
   const hint = document.createElement('span'); hint.className = 'hint-pill'; hint.textContent = hintOf(e.rating); sc.append(hint);
-  if (e.line){ const q = document.createElement('div'); q.className = 'quote'; q.textContent = e.line; info.append(q); }
   hero.append(info);
   hero.tabIndex = 0; hero.setAttribute('role','button'); hero.setAttribute('aria-label', `최근 한 게임 ${e.title} 자세히 보기`);
   hero.onclick = () => openDetail(e.id);
@@ -1255,9 +1287,11 @@ function fillCard(n, e){
   if (e.year){ const y = document.createElement('span'); y.className = 'yr'; y.textContent = e.year; t.append(y); }
   if (st === 'seen' && e.result === 'drop'){ const r = document.createElement('span'); r.className = 'result drop'; r.textContent = '접음'; t.append(r); }
   if (st === 'seen' && e.rewatches.length){ const r = document.createElement('span'); r.className = 'rw'; r.textContent = `${e.rewatches.length + 1}회차`; t.append(r); }
-  const sub = n.querySelector('.sub'); const txt = st === 'seen' ? e.line : e.memo;
-  sub.textContent = txt || (want ? '메모 없음' : watching ? '어디까지 했는지 적어 두세요' : '한줄평 없음'); sub.classList.toggle('empty', !txt);
-  const ex = n.querySelector('.ex'); ex.textContent = st === 'seen' ? e.note : ''; ex.hidden = !ex.textContent;
+  /* 한 게임은 한줄평 대신 점수를 크게 — 본문 자리에는 감상을 보여 준다 */
+  const sub = n.querySelector('.sub'); const txt = st === 'seen' ? e.note : e.memo;
+  sub.textContent = txt || (want ? '메모 없음' : watching ? '어디까지 했는지 적어 두세요' : '감상 없음'); sub.classList.toggle('empty', !txt);
+  sub.classList.toggle('note', st === 'seen');
+  const ex = n.querySelector('.ex'); ex.textContent = ''; ex.hidden = true;
   const m = n.querySelector('.meta'); m.textContent = '';
   if (e.where){ const tg = document.createElement('span'); tg.className = 'tag'; tg.style.setProperty('--tc', placeColor(e.where)); tg.innerHTML = '<i></i>'; tg.append(want ? `${e.where}로 할 예정` : e.where); m.append(tg); }
   const d = document.createElement('span'); d.textContent = want ? '담은 날 ' + dot(new Date(e.createdAt - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)) : watching ? (e.date ? dot(e.date) + ' 시작' : '') : dot(lastDate(e)); if (d.textContent) m.append(d);
@@ -1265,7 +1299,7 @@ function fillCard(n, e){
   const side = n.querySelector('.side'); side.textContent = '';
   if (watching){ const w = document.createElement('span'); w.className = 'watching'; w.textContent = '하는 중'; side.append(w); }
   else if (want){ const mk = document.createElement('span'); mk.className = 'mark'; mk.innerHTML = IC.mark; side.append(mk); }
-  else side.append(makeScore(e.rating, 'md'));
+  else { side.append(makeScore(e.rating, 'xl')); const h = document.createElement('small'); h.className = 'shint'; h.textContent = e.rating ? hintOf(e.rating) : '점수 매기기'; side.append(h); }
   n.setAttribute('aria-label', want ? `${e.title}, 할 게임` : watching ? `${e.title}, 하는 중` : `${e.title}, ${RESULT[e.result]}, ${e.rating ? e.rating + '점' : '점수 없음'}`);
 }
 function renderList(){
@@ -1405,7 +1439,7 @@ function setView(v){
   const seen = v === 'seen', stats = v === 'stats';
   $('#listView').hidden = stats; $('#statsView').hidden = !stats;
   $('#places').hidden = !seen; $('#rateFilter').hidden = !seen; $('#resFilter').hidden = !seen; $('#sort').hidden = !seen;
-  $('#q').placeholder = seen ? '제목·한줄평 검색' : '제목·메모 검색';
+  $('#q').placeholder = seen ? '제목·감상 검색' : '제목·메모 검색';
   $('#addBtn').setAttribute('aria-label', v === 'want' ? '할 게임 담기' : v === 'watching' ? '하는 중 추가' : '기록하기');
   if (stats) renderStatsView(); else renderList();
 }
@@ -1889,7 +1923,8 @@ function mergeStates(a, b){
   [...(a.entries || []), ...(b.entries || [])].forEach(x => { const cur = map.get(x.id); if (!cur || (x.updatedAt || 0) > (cur.updatedAt || 0)) map.set(x.id, x); });
   const entries = [...map.values()].filter(x => !(deleted[x.id] && deleted[x.id] >= (x.updatedAt || 0)));
   const dlSeen = Object.assign({}, b.dlSeen || {}, a.dlSeen || {});
-  return { entries, deleted, dlSeen, coverV: Math.max(a.coverV || 0, b.coverV || 0), savedAt: Math.max(a.savedAt || 0, b.savedAt || 0) };
+  const alias = Object.assign({}, b.alias || {}, a.alias || {});
+  return { entries, deleted, dlSeen, alias, coverV: Math.max(a.coverV || 0, b.coverV || 0), savedAt: Math.max(a.savedAt || 0, b.savedAt || 0) };
 }
 const sigOf = st => JSON.stringify({ e: [...(st.entries || [])].sort((x,y) => x.id < y.id ? -1 : 1), d: st.deleted || {}, s: Object.keys(st.dlSeen || {}).sort() });
 
@@ -1964,7 +1999,8 @@ async function importDaylog(quiet = true){
   games.forEach((g, key) => {
     const title = key.replace(/\s*\((게임|game)\)\s*$/i, '') || key; /* 데이로그에서 이름 겹침 피하려 붙인 '(게임)' 떼기 */
     const prevRaw = state.dlSeen[key], prev = typeof prevRaw === 'string' ? prevRaw : prevRaw ? 'want' : '';
-    const e = state.entries.find(x => normT(x.title) === normT(title));
+    const aid = (state.alias || {})[normT(title)];
+    const e = state.entries.find(x => normT(x.title) === normT(title)) || (aid && state.entries.find(x => x.id === aid));
     /* 기기가 비어 있으면 데이로그 기기로 채운다 (Xbox 탭이 없을 때 들어온 게임) */
     if (e && !e.where && g.where){ e.where = g.where; e.updatedAt = now; changed = true; filled++; }
     if (prev && DL_RANK[prev] >= DL_RANK[g.status]) return;
@@ -2094,7 +2130,7 @@ setInterval(() => { if (document.visibilityState === 'visible') syncNow(true); }
 
 /* ---------- 시작 ---------- */
 $$('.appVer').forEach(el => { el.textContent = APP_VERSION; });
-load(); applyTheme(); setView('seen'); renderHero(); renderStats(); renderSyncBadge(); renderRawgBadge(); syncNow(true);
+load(); if (mergeDupes()) lsSet(KEY, JSON.stringify(state)); applyTheme(); setView('seen'); renderHero(); renderStats(); renderSyncBadge(); renderRawgBadge(); syncNow(true);
 setTimeout(() => fillPosters(true), 4000);
 checkAddLink();
 
