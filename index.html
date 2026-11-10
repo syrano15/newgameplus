@@ -648,6 +648,73 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:40;opa
 .toast{border-radius:4px;background:var(--surface-solid);color:var(--text);border:1px solid var(--accent);box-shadow:0 0 18px var(--glow)}
 dialog::backdrop{background:rgba(2,4,10,.7)}
 @media (max-width:760px){ .brand .tagline{display:none} .brand h1{white-space:nowrap} }
+
+/* ===== v1.3: 가로 이미지 · 큰 카드 · 검은 바탕 + RGB ===== */
+:root,:root[data-theme="dark"]{
+  --bg:#000; --bg-2:#030409; --surface:rgba(9,11,20,.86); --surface-solid:#080a12; --surface-2:rgba(255,255,255,.04);
+  --line:rgba(120,200,255,.13); --line-2:rgba(0,229,255,.38);
+  --glow:rgba(0,229,255,.3); --glow-2:rgba(255,43,214,.24);
+  --rgb:linear-gradient(90deg,#ff004c,#ff8a00,#ffe600,#2bff9a,#00e5ff,#3d5bff,#c13bff,#ff004c);
+}
+:root[data-theme="light"]{ --rgb:linear-gradient(90deg,#e0003f,#e57600,#c9b400,#08b56a,#0097c4,#2f4be0,#a12ee0,#e0003f) }
+@media (prefers-color-scheme: light){ :root[data-theme="auto"],:root:not([data-theme]){ --rgb:linear-gradient(90deg,#e0003f,#e57600,#c9b400,#08b56a,#0097c4,#2f4be0,#a12ee0,#e0003f) } }
+
+:root[data-theme="dark"] body{background:
+  radial-gradient(900px 380px at 50% -12%, rgba(0,229,255,.10), transparent 70%),
+  radial-gradient(circle, rgba(120,200,255,.07) 1px, transparent 1.2px) 0 0/6px 6px,
+  #000 fixed}
+/* 맨 위 RGB 띠 — 키보드 RGB처럼 천천히 흐른다 */
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:45;background:var(--rgb);background-size:200% 100%;animation:rgbflow 8s linear infinite;box-shadow:0 0 14px rgba(0,229,255,.5)}
+@keyframes rgbflow{to{background-position:-200% 0}}
+.hero{position:relative;isolation:isolate;border-color:transparent}
+.hero::before{content:"";display:block;position:absolute;inset:0;width:auto;height:auto;border-radius:inherit;padding:1px;z-index:-1;
+  background:var(--rgb);background-size:200% 100%;animation:rgbflow 8s linear infinite;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.85}
+.tab::after{background:var(--rgb);background-size:200% 100%;animation:rgbflow 8s linear infinite}
+@media (prefers-reduced-motion:reduce){ body::before,.hero::before,.tab::after{animation:none} }
+:root[data-theme="dark"] .deco::before{opacity:.32}
+
+/* 가로 이미지 (16:9) */
+.poster{aspect-ratio:16/9}
+.poster span{-webkit-line-clamp:2}
+.poster.sm{width:192px;height:auto;font-size:13px;padding:8px 10px;border-radius:5px}
+.poster.lg,.hero .poster.lg{width:360px;height:auto;font-size:16px;padding:12px;border-radius:6px}
+.poster img{object-position:center}
+.pick{width:156px}
+.pick .ph{aspect-ratio:16/9}
+.rank-row .poster.sm{width:96px;font-size:10px;padding:4px 6px}
+#dPoster .poster.lg{width:100%}
+.detail-top{flex-direction:column;gap:14px}
+.hero .backdrop{opacity:0;transition:opacity .4s ease;filter:blur(2px) saturate(1.2)}
+.hero .backdrop.on{opacity:.38}
+:root[data-theme="light"] .hero .backdrop.on{opacity:.18}
+
+/* 큰 카드 */
+.list{gap:12px}
+.card{padding:16px 24px 16px 16px;gap:22px;align-items:stretch}
+.card .pslot{display:flex;align-items:center}
+.card .body{display:flex;flex-direction:column;justify-content:center;gap:2px}
+.card .title{font-size:20px;line-height:1.3}
+.card .title .yr{font-size:14px}
+.card .sub{font-size:16px;line-height:1.5;margin-top:6px;-webkit-line-clamp:2}
+.card .ex{font-size:14px;line-height:1.55;color:var(--muted);margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:pre-wrap}
+.card .ex[hidden]{display:none}
+.card .meta{font-size:14px;margin-top:8px}
+.card .side{justify-content:center}
+.sc.md{width:56px;height:56px;font-size:24px;clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px)}
+@media (hover:hover) and (pointer:fine){ .card:hover{box-shadow:inset 3px 0 0 transparent,0 0 22px color-mix(in srgb,var(--accent) 12%,transparent)} .card:hover::before{opacity:1} }
+.card::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:linear-gradient(180deg,#ff004c,#ffe600,#2bff9a,#00e5ff,#c13bff);opacity:0;transition:opacity .18s ease}
+
+@media (max-width:760px){
+  .hero{flex-direction:column;align-items:stretch}
+  .poster.lg,.hero .poster.lg{width:100%}
+  .card{padding:12px;gap:14px;flex-wrap:wrap}
+  .card .pslot{width:100%}
+  .poster.sm{width:100%;font-size:15px}
+  .card .body{flex:1}
+  .card .title{font-size:18px}
+  .card .sub{font-size:15px}
+}
 </style>
 </head>
 <body>
@@ -666,7 +733,7 @@ dialog::backdrop{background:rgba(2,4,10,.7)}
       <button class="btn icon-btn" id="menuBtn" aria-label="메뉴" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg></button>
       <div class="menu" id="menu" hidden>
         <button data-act="sync">기기 간 동기화 <small id="syncBadge"></small></button>
-        <button data-act="daylog">데이로그 언젠가 가져오기</button>
+        <button data-act="daylog">데이로그에서 게임 가져오기</button>
         <hr>
         <button data-act="rawg">표지 설정 (RAWG 키) <small id="rawgBadge"></small></button>
         <button data-act="fillposters">표지 한 번에 찾기</button>
@@ -721,7 +788,7 @@ dialog::backdrop{background:rgba(2,4,10,.7)}
   <div class="empty-box" id="empty" hidden></div>
   </div>
   <div id="statsView" hidden></div>
-  <p class="credit"><b class="appVer"></b> · 게임 정보: <a href="https://www.wikidata.org" target="_blank" rel="noopener" style="color:inherit">Wikidata</a> · <a href="https://rawg.io" target="_blank" rel="noopener" style="color:inherit">RAWG</a> · 세로 표지: Steam</p>
+  <p class="credit"><b class="appVer"></b> · 게임 정보: <a href="https://www.wikidata.org" target="_blank" rel="noopener" style="color:inherit">Wikidata</a> · <a href="https://rawg.io" target="_blank" rel="noopener" style="color:inherit">RAWG</a> · 이미지: Steam</p>
 </div>
 
 <button class="fab" id="addBtn" aria-label="기록하기"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -864,7 +931,7 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.2'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 */
+const APP_VERSION = 'v1.3'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
@@ -941,8 +1008,10 @@ function makeScore(v, size = ''){
   return s;
 }
 const rawgImg = (url, w) => url.replace('/media/', `/media/resize/${w}/-/`);
-const STEAM = id => [`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_600x900.jpg`, `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_600x900.jpg`];
-/* 스팀 세로 표지 → 없으면 RAWG 대표 이미지 → 그것도 없으면 제목 카드 */
+/* v1.3: 가로 스크린샷 비율(16:9)로 — 스팀 가로 캡슐 → 헤더 → RAWG 대표 이미지 */
+const STEAM = id => [`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/capsule_616x353.jpg`, `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`, `https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg`];
+const STEAM_HERO = id => [`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_hero.jpg`, `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_hero.jpg`];
+/* 스팀 가로 이미지 → 없으면 RAWG 대표 이미지 → 그것도 없으면 제목 카드 */
 function coverSrcs(e, w){ return [...(e.steam ? STEAM(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, w)] : [])]; }
 function chainImg(img, srcs, onFail){
   let i = 0; img.src = srcs[0];
@@ -952,7 +1021,7 @@ function makePoster(e, size){
   const p = document.createElement('div'); p.className = 'poster ' + size;
   p.style.setProperty('--pc', posterColor(e.title));
   const s = document.createElement('span'); s.textContent = e.title; p.append(s);
-  const srcs = coverSrcs(e, size === 'lg' ? 640 : 420);
+  const srcs = coverSrcs(e, size === 'lg' ? 960 : 640);
   if (srcs.length){
     const img = new Image(); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
     chainImg(img, srcs, () => { img.remove(); p.classList.remove('has-img'); });
@@ -1116,7 +1185,12 @@ function renderHero(){
     return;
   }
   const e = [...seen].sort((a,b) => lastDate(b).localeCompare(lastDate(a)) || b.createdAt - a.createdAt)[0];
-  if (e.bg){ const bdEl = document.createElement('div'); bdEl.className = 'backdrop'; bdEl.style.backgroundImage = `url(${rawgImg(e.bg, 1280)})`; hero.append(bdEl); }
+  const bsrcs = [...(e.steam ? STEAM_HERO(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, 1280)] : [])];
+  if (bsrcs.length){
+    const bdEl = document.createElement('div'); bdEl.className = 'backdrop'; hero.append(bdEl);
+    const probe = new Image(); probe.onload = () => { bdEl.style.backgroundImage = `url(${probe.src})`; bdEl.classList.add('on'); };
+    chainImg(probe, bsrcs, () => bdEl.remove());
+  }
   hero.append(makePoster(e, 'lg'));
   const info = document.createElement('div'); info.className = 'info';
   info.innerHTML = `<div class="eyebrow">${IC.flag}${e.result === 'drop' ? '최근 접은 게임' : '최근 엔딩 본 게임'}</div><h2></h2><div class="by"></div><div class="score"></div>`;
@@ -1152,7 +1226,7 @@ const listEl = $('#list');
 const nodes = new Map();
 function buildCard(){
   const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
-  b.innerHTML = '<div class="pslot"></div><div class="body"><div class="title"></div><div class="sub"></div><div class="meta"></div></div><div class="side"></div>';
+  b.innerHTML = '<div class="pslot"></div><div class="body"><div class="title"></div><div class="sub"></div><div class="ex"></div><div class="meta"></div></div><div class="side"></div>';
   b.addEventListener('click', () => openDetail(b.dataset.id));
   return b;
 }
@@ -1168,6 +1242,7 @@ function fillCard(n, e){
   if (st === 'seen' && e.rewatches.length){ const r = document.createElement('span'); r.className = 'rw'; r.textContent = `${e.rewatches.length + 1}회차`; t.append(r); }
   const sub = n.querySelector('.sub'); const txt = st === 'seen' ? e.line : e.memo;
   sub.textContent = txt || (want ? '메모 없음' : watching ? '어디까지 했는지 적어 두세요' : '한줄평 없음'); sub.classList.toggle('empty', !txt);
+  const ex = n.querySelector('.ex'); ex.textContent = st === 'seen' ? e.note : ''; ex.hidden = !ex.textContent;
   const m = n.querySelector('.meta'); m.textContent = '';
   if (e.where){ const tg = document.createElement('span'); tg.className = 'tag'; tg.style.setProperty('--tc', placeColor(e.where)); tg.innerHTML = '<i></i>'; tg.append(want ? `${e.where}로 할 예정` : e.where); m.append(tg); }
   const d = document.createElement('span'); d.textContent = want ? '담은 날 ' + dot(new Date(e.createdAt - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10)) : watching ? (e.date ? dot(e.date) + ' 시작' : '') : dot(lastDate(e)); if (d.textContent) m.append(d);
@@ -1175,7 +1250,7 @@ function fillCard(n, e){
   const side = n.querySelector('.side'); side.textContent = '';
   if (watching){ const w = document.createElement('span'); w.className = 'watching'; w.textContent = '하는 중'; side.append(w); }
   else if (want){ const mk = document.createElement('span'); mk.className = 'mark'; mk.innerHTML = IC.mark; side.append(mk); }
-  else side.append(makeScore(e.rating));
+  else side.append(makeScore(e.rating, 'md'));
   n.setAttribute('aria-label', want ? `${e.title}, 할 게임` : watching ? `${e.title}, 하는 중` : `${e.title}, ${RESULT[e.result]}, ${e.rating ? e.rating + '점' : '점수 없음'}`);
 }
 function renderList(){
@@ -1672,14 +1747,14 @@ $('#importFile').addEventListener('change', async e => {
 /* 테마 */
 const THEMES = ['auto','dark','light'], THEME_NAME = { auto: '시스템 따라가기', dark: '어둡게', light: '밝게' };
 function applyTheme(){
-  const t = lsGet(THEME_KEY) || 'auto';
+  const t = lsGet(THEME_KEY) || 'dark';
   if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = t;
   $('#themeLabel').textContent = '· ' + THEME_NAME[t];
   const dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
   $('#hTheme').innerHTML = dark ? IC.moon : IC.sun; $('#hTheme').setAttribute('aria-label', `테마 바꾸기 (지금: ${THEME_NAME[t]})`);
 }
 function cycleTheme(){
-  const t = lsGet(THEME_KEY) || 'auto'; const n = THEMES[(THEMES.indexOf(t) + 1) % 3];
+  const t = lsGet(THEME_KEY) || 'dark'; const n = THEMES[(THEMES.indexOf(t) + 1) % 3];
   lsSet(THEME_KEY, n); applyTheme(); toast('테마 · ' + THEME_NAME[n]);
 }
 
@@ -1739,6 +1814,7 @@ const sigOf = st => JSON.stringify({ e: [...(st.entries || [])].sort((x,y) => x.
    한 번 가져온 이름은 dlSeen 에 남겨서, 여기서 지운 게임이 다시 들어오지 않게 한다. */
 const DL_MARK = 'questboard-sync', DL_GID_KEY = 'newgameplus.daylogGist';
 const DL_PLAT = { ps: 'PS', switch: '스위치', pc: 'PC', mobile: '모바일' };
+const DL_RANK = { want: 1, watching: 2, seen: 3 };
 async function findDaylogGist(token){
   const cached = lsGet(DL_GID_KEY); if (cached) return cached;
   for (let page = 1; page <= 5; page++){
@@ -1749,45 +1825,81 @@ async function findDaylogGist(token){
   }
   return null;
 }
+/* 데이로그 게임 → { 상태, 결말, 날짜, 기기, 플레이 횟수 }
+   works[이름] = { kind:'game', plat, fin:'end'|'drop'|'', finAt:'YYYY-MM-DD' }
+   플레이 횟수·시작한 날은 날짜 칸(days)에서 그 이름으로 '완료'한 항목과, 지운 날의 요약(sum)에서 센다 */
 async function daylogGames(token){
   const id = await findDaylogGist(token); if (!id) return null;
   const r = await ghFetch('/gists/' + id + '?t=' + Date.now(), token);
   if (r.status === 404){ lsDel(DL_GID_KEY); return null; }
   if (!r.ok) throw new Error('http');
   const g = await r.json(); const out = new Map();
+  const put = (t, v) => { const o = out.get(t); if (!o || DL_RANK[v.status] > DL_RANK[o.status] || (v.status === o.status && v.plays > o.plays)) out.set(t, v); };
   for (const name of ['home.json', 'work.json']){
     const f = g.files && g.files[name]; if (!f) continue;
     let d; try { d = JSON.parse(f.truncated ? await (await fetch(f.raw_url)).text() : f.content); } catch(_){ continue; }
-    const works = d.works || {}, someday = (d.days && d.days.someday) || [];
-    someday.forEach(it => {
+    const works = d.works || {}, days = d.days || {}, sum = d.sum || {};
+    const isGame = t => works[t] && works[t].kind === 'game';
+    const tally = {};
+    const bump = (t, k, n) => { const o = tally[t] || (tally[t] = { plays: 0, first: '', last: '' }); o.plays += n; if (isDate(k)){ if (!o.first || k < o.first) o.first = k; if (k > o.last) o.last = k; } };
+    Object.keys(days).forEach(k => {
+      if (k === 'someday' || !isDate(k)) return;
+      (days[k] || []).forEach(it => {
+        if (!it || it.canceled || !it.done) return;
+        const t = String(it.text || '').trim(); if (isGame(t)) bump(t, k, 1);
+      });
+    });
+    Object.keys(sum).forEach(k => {
+      if (days[k] || !sum[k] || !sum[k].w) return;
+      Object.entries(sum[k].w).forEach(([t, v]) => { if (isGame(t)) bump(t, k, (v && v[0]) || 0); });
+    });
+    Object.entries(works).forEach(([t, w]) => {
+      t = String(t).trim(); if (!t || !w || w.kind !== 'game') return;
+      const ty = tally[t] || { plays: 0, first: '', last: '' }, where = DL_PLAT[w.plat] || '';
+      if (w.fin === 'end' || w.fin === 'drop') put(t, { status: 'seen', result: w.fin === 'end' ? 'clear' : 'drop', date: isDate(w.finAt) ? w.finAt : ty.last, where, plays: ty.plays, note: '' });
+      else if (ty.plays) put(t, { status: 'watching', date: ty.first, where, plays: ty.plays, note: '' });
+    });
+    (days.someday || []).forEach(it => {
       if (!it || it.done || it.canceled) return;
       const t = String(it.text || '').trim(); const w = works[t];
       if (!t || !w || w.fin || w.kind !== 'game') return;
-      out.set(t, { note: it.note || '', where: DL_PLAT[w.plat] || '' });
+      put(t, { status: 'want', where: DL_PLAT[w.plat] || '', plays: 0, note: it.note || '' });
     });
   }
   return out;
 }
+/* 데이로그에서 가져오기 — 엔딩 본·하차한 게임은 한 게임으로, 하던 게임은 하는 중으로, 언젠가는 할 게임으로.
+   dlSeen[제목]에 어디까지 가져왔는지 남긴다: 여기서 지운 게임은 되살리지 않고, 내가 쓴 점수·감상은 덮지 않는다.
+   할 게임으로 들어온 게임을 데이로그에서 끝내면 한 게임으로 올려 준다. */
 async function importDaylog(quiet = true){
   const cfg = syncCfg(); if (!cfg) { if (!quiet) toast('먼저 기기 간 동기화를 연결해 주세요'); return; }
   let games;
   try { games = await daylogGames(cfg.token); } catch(_){ if (!quiet) toast('데이로그를 읽지 못했어요. 잠시 후 다시 해주세요'); return; }
   if (!games){ if (!quiet) toast('데이로그 동기화 데이터를 찾지 못했어요'); return; }
   state.dlSeen = state.dlSeen || {};
-  const have = new Set(state.entries.map(e => normT(e.title)));
-  const added = [];
-  games.forEach(({ note, where }, title) => {
-    if (state.dlSeen[title]) return;
-    state.dlSeen[title] = Date.now();
-    if (have.has(normT(title))) return;
-    const now = Date.now();
-    state.entries.push(normEntry({ id: uid(), title, where, status: 'want', memo: note ? `데이로그 언젠가 · ${note}` : '데이로그 언젠가에서 가져옴', createdAt: now, updatedAt: now }));
-    added.push(title);
+  const now = Date.now(); let added = 0, moved = 0, changed = false;
+  games.forEach((g, key) => {
+    const title = key.replace(/\s*\((게임|game)\)\s*$/i, '') || key; /* 데이로그에서 이름 겹침 피하려 붙인 '(게임)' 떼기 */
+    const prevRaw = state.dlSeen[key], prev = typeof prevRaw === 'string' ? prevRaw : prevRaw ? 'want' : '';
+    if (prev && DL_RANK[prev] >= DL_RANK[g.status]) return;
+    const e = state.entries.find(x => normT(x.title) === normT(title));
+    state.dlSeen[key] = g.status; changed = true;
+    const memo = g.plays ? `데이로그에서 가져옴 · 플레이 ${g.plays}회` : g.status !== 'want' ? '데이로그에서 가져옴' : g.note ? `데이로그 언젠가 · ${g.note}` : '데이로그 언젠가에서 가져옴';
+    if (!e){
+      if (prev) return; /* 예전에 가져왔는데 여기서 지운 게임 */
+      state.entries.push(normEntry({ id: uid() + added, title, where: g.where, status: g.status, result: g.result, date: g.date || '', memo, createdAt: now + added, updatedAt: now }));
+      added++;
+    } else if (DL_RANK[statusOf(e)] < DL_RANK[g.status]){
+      e.status = g.status; if (g.status === 'seen') e.result = g.result;
+      if (g.date) e.date = g.date; if (!e.where && g.where) e.where = g.where;
+      if (!e.memo || e.memo.startsWith('데이로그')) e.memo = memo;
+      e.updatedAt = now; moved++;
+    }
   });
-  if (added.length || games.size){ save(); render(); }
-  if (added.length) toast(`데이로그에서 할 게임 ${added.length}개를 가져왔어요`);
-  if (added.length && rawgKey()) setTimeout(() => fillPosters(true), 2500);
-  else if (!added.length && !quiet) toast('새로 가져올 게임이 없어요');
+  if (changed){ save(); render(); }
+  if (added || moved) toast('데이로그 · ' + [added && `${added}개를 가져왔어요`, moved && `${moved}개를 옮겼어요`].filter(Boolean).join(' · '));
+  else if (!quiet) toast('새로 가져올 게임이 없어요');
+  if (added) setTimeout(() => fillPosters(true), 2500);
 }
 async function syncNow(quiet = true){
   const cfg = syncCfg(); if (!cfg || syncState.busy) return;
