@@ -744,6 +744,7 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:4
         <hr>
         <button data-act="rawg">표지 설정 (RAWG 키) <small id="rawgBadge"></small></button>
         <button data-act="fillposters">표지 한 번에 찾기</button>
+        <button data-act="askcovers">표지 없는 게임 목록 복사 <small>Claude용</small></button>
         <hr>
         <button data-act="export">백업 파일 내보내기</button>
         <button data-act="import">백업 파일 가져오기</button>
@@ -942,7 +943,7 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.4'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 */
+const APP_VERSION = 'v1.5'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['Xbox','#4CA860'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
@@ -988,7 +989,7 @@ function normEntry(raw){
     hours: Math.max(0, Math.min(99999, Math.round((+raw.hours || 0)*10)/10)),
     line: String(raw.line || ''), note: String(raw.note || ''), memo: String(raw.memo || ''),
     date: String(raw.date || ''), where: PLACES.some(p => p[0] === raw.where) ? raw.where : '',
-    img: /^https:\/\/[^\s"'<>]{4,600}$/.test(raw.img || '') ? raw.img : '', wd: /^Q\d+$/.test(raw.wd || '') ? raw.wd : '', rawgId: +raw.rawgId || 0, steam: +raw.steam || 0, bg: BG_RE.test(raw.bg || '') ? raw.bg : '',
+    img: /^https:\/\/[^\s"'<>]{4,600}$/.test(raw.img || '') ? raw.img : '', yt: /^[\w-]{11}$/.test(raw.yt || '') ? raw.yt : '', wd: /^Q\d+$/.test(raw.wd || '') ? raw.wd : '', rawgId: +raw.rawgId || 0, steam: +raw.steam || 0, bg: BG_RE.test(raw.bg || '') ? raw.bg : '',
     createdAt: +raw.createdAt || Date.now(), updatedAt: +raw.updatedAt || Date.now()
   };
 }
@@ -1023,7 +1024,9 @@ const rawgImg = (url, w) => url.replace('/media/', `/media/resize/${w}/-/`);
 const STEAM = id => [`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/capsule_616x353.jpg`, `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/header.jpg`, `https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg`];
 const STEAM_HERO = id => [`https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${id}/library_hero.jpg`, `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_hero.jpg`];
 /* 스팀 가로 이미지 → 없으면 RAWG 대표 이미지 → 그것도 없으면 제목 카드 */
-function coverSrcs(e, w){ return [...(e.img ? [e.img] : []), ...(e.steam ? STEAM(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, w)] : [])]; }
+/* 공식 트레일러 유튜브 썸네일(가로) — 스팀에 없는 게임용, 키 없이 Wikidata에서 */
+const YT = id => [`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`, `https://i.ytimg.com/vi/${id}/hqdefault.jpg`];
+function coverSrcs(e, w){ return [...(e.img ? [e.img] : []), ...(e.steam ? STEAM(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, w)] : []), ...(e.yt ? YT(e.yt) : [])]; }
 function chainImg(img, srcs, onFail){
   let i = 0; img.src = srcs[0];
   img.onerror = () => { i++; if (i < srcs.length) img.src = srcs[i]; else onFail(); };
@@ -1099,7 +1102,8 @@ async function wikidataGames(q, year){
     const pd = (c.P577 || []).filter(z => z.mainsnak && z.mainsnak.datavalue);
     const pref = pd.filter(z => z.rank === 'preferred');
     const dates = (pref.length ? pref : pd).map(z => String(z.mainsnak.datavalue.value.time || '').slice(1, 5)).filter(y => /^\d{4}$/.test(y)).sort();
-    out.push({ wd: id, id: 0, title: ko || en || '', en: en || ko || '', year: dates[0] || '', steam: +v('P1733')[0] || 0, bg: '' });
+    const yt = v('P1651').find(x => /^[\w-]{11}$/.test(x)) || '';
+    out.push({ wd: id, id: 0, title: ko || en || '', en: en || ko || '', year: dates[0] || '', steam: +v('P1733')[0] || 0, yt, bg: '' });
   });
   if (year) out.sort((a, b) => (b.year === year) - (a.year === year));
   return out.filter(m => m.title).slice(0, 10);
@@ -1119,20 +1123,20 @@ async function searchGames(q, year){
 const pickKey = m => m ? (m.wd ? 'wd:' + m.wd : 'rawg:' + m.id) : '';
 function bestMatch(e, list){
   const t = normT(e.title);
-  const same = list.filter(m => (m.steam || m.bg) && (normT(m.title) === t || normT(m.en) === t));
+  const same = list.filter(m => (m.steam || m.bg || m.yt) && (normT(m.title) === t || normT(m.en) === t));
   if (!same.length) return null;
   return (e.year && same.find(m => m.year === e.year)) || (same.length === 1 ? same[0] : null);
 }
 let filling = false; const triedPoster = new Set();
 async function fillPosters(quiet = true){
   if (filling) return; filling = true;
-  const targets = state.entries.filter(e => !e.img && !e.bg && !e.steam && (!quiet || !triedPoster.has(e.id)));
+  const targets = state.entries.filter(e => !e.img && !e.bg && !e.steam && !e.yt && (!quiet || !triedPoster.has(e.id)));
   let got = 0, miss = 0;
   try {
     for (const e of targets){
       triedPoster.add(e.id);
       const m = bestMatch(e, await searchGames(e.title, e.year));
-      if (m){ if (!m.wd && !m.steam && m.id) m.steam = await steamOf(m.id); e.wd = m.wd || ''; e.rawgId = m.id || 0; e.bg = m.bg; e.steam = m.steam; if (!e.year && m.year) e.year = m.year; e.updatedAt = Date.now(); got++; } else miss++;
+      if (m){ if (!m.wd && !m.steam && m.id) m.steam = await steamOf(m.id); e.wd = m.wd || ''; e.rawgId = m.id || 0; e.bg = m.bg; e.steam = m.steam; e.yt = m.yt || ''; if (!e.year && m.year) e.year = m.year; e.updatedAt = Date.now(); got++; } else miss++;
     }
   } catch(err){
     if (!quiet) toast(err.message === 'key' ? 'RAWG 키가 맞지 않아요. 표지 설정을 확인해 주세요' : '표지를 찾지 못했어요. 잠시 후 다시 해주세요');
@@ -1196,7 +1200,7 @@ function renderHero(){
     return;
   }
   const e = [...seen].sort((a,b) => lastDate(b).localeCompare(lastDate(a)) || b.createdAt - a.createdAt)[0];
-  const bsrcs = [...(e.img ? [e.img] : []), ...(e.steam ? STEAM_HERO(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, 1280)] : [])];
+  const bsrcs = [...(e.img ? [e.img] : []), ...(e.steam ? STEAM_HERO(e.steam) : []), ...(e.bg ? [rawgImg(e.bg, 1280)] : []), ...(e.yt ? [YT(e.yt)[0]] : [])];
   if (bsrcs.length){
     const bdEl = document.createElement('div'); bdEl.className = 'backdrop'; hero.append(bdEl);
     const probe = new Image(); probe.onload = () => { bdEl.style.backgroundImage = `url(${probe.src})`; bdEl.classList.add('on'); };
@@ -1245,7 +1249,7 @@ function fillCard(n, e){
   n.dataset.id = e.id;
   const st = statusOf(e), want = st === 'want', watching = st === 'watching';
   const ps = n.querySelector('.pslot');
-  const sig = [e.title, e.img, e.steam, e.bg].join('|');
+  const sig = [e.title, e.img, e.steam, e.bg, e.yt].join('|');
   if (ps.dataset.sig !== sig){ ps.replaceChildren(makePoster(e, 'sm')); ps.dataset.sig = sig; }
   const t = n.querySelector('.title'); t.textContent = e.title;
   if (e.year){ const y = document.createElement('span'); y.className = 'yr'; y.textContent = e.year; t.append(y); }
@@ -1525,9 +1529,9 @@ function openForm(id, mode, convert){
   setScore(e && !converting ? e.rating : 0);
   btnDel.hidden = !e || converting; disarm();
   $('#fImg').value = e ? e.img : ''; setCustomImg(e ? e.img : '', true);
-  picked = e && (e.bg || e.steam) ? { wd: e.wd, id: e.rawgId, title: e.title, en: '', year: e.year, bg: e.bg, steam: e.steam } : null;
+  picked = e && (e.bg || e.steam || e.yt) ? { wd: e.wd, id: e.rawgId, title: e.title, en: '', year: e.year, bg: e.bg, steam: e.steam, yt: e.yt } : null;
   renderPicks(picked ? [picked] : []);
-  if (e && !e.bg && !e.steam) searchPicks();
+  if (e && !e.bg && !e.steam && !e.yt && !e.img) searchPicks();
   $('#fTitle').style.borderColor = '';
   editDlg.showModal();
   if (!e) $('#fTitle').focus(); else if (converting === 'seen') scoreIn.focus();
@@ -1538,7 +1542,7 @@ form.addEventListener('submit', ev => {
   if (!title){ $('#fTitle').style.borderColor = 'var(--low)'; $('#fTitle').focus(); return; }
   const now = Date.now();
   const base = { title, year: $('#fYear').value.replace(/\D/g,'').slice(0,4), where,
-    img: customImg, wd: picked ? picked.wd || '' : '', rawgId: picked ? picked.id || 0 : 0, steam: picked ? picked.steam || 0 : 0, bg: picked ? picked.bg || '' : '', updatedAt: now };
+    img: customImg, yt: picked ? picked.yt || '' : '', wd: picked ? picked.wd || '' : '', rawgId: picked ? picked.id || 0 : 0, steam: picked ? picked.steam || 0 : 0, bg: picked ? picked.bg || '' : '', updatedAt: now };
   const date = $('#fDate').value, hours = Math.max(0, Math.min(99999, Math.round(parseHours($('#fHours').value)*10)/10));
   const data = formMode === 'want' ? { ...base, status: 'want', memo: $('#fMemo').value.trim() }
     : formMode === 'watching' ? { ...base, status: 'watching', memo: $('#fMemo').value.trim(), date, hours }
@@ -1717,7 +1721,7 @@ $('#btnAgain').addEventListener('click', () => {
 
 /* ---------- 추가 링크 (#add=…) ----------
    Claude가 만들어 준 링크를 열면 그 안의 기록을 보여 주고, 확인하면 더한다. 주소창의 #add 는 바로 지운다. */
-let pendingAdd = [], pendingFill = [];
+let pendingAdd = [], pendingFill = [], pendingCover = [];
 function checkAddLink(){
   if (!location.hash.startsWith('#add=')) return;
   const raw = location.hash.slice(5);
@@ -1727,6 +1731,7 @@ function checkAddLink(){
     const b64 = raw.replace(/-/g, '+').replace(/_/g, '/');
     const bin = atob(b64 + '='.repeat((4 - b64.length % 4) % 4));
     const data = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))));
+    if (data && Array.isArray(data.covers)) return openCoverLink(data.covers);
     list = (Array.isArray(data) ? data : data.entries || []).map(normEntry).filter(Boolean);
   } catch(_){ toast('추가 링크를 읽지 못했어요'); return; }
   if (!list.length) return;
@@ -1743,6 +1748,7 @@ function checkAddLink(){
   $('#addDlg').showModal();
 }
 $('#addGo').addEventListener('click', () => {
+  if (pendingCover.length) return; /* 표지 링크는 아래에서 처리 */
   const now = Date.now();
   pendingAdd.forEach((e, i) => state.entries.push({ ...e, id: uid() + i, createdAt: now + i, updatedAt: now + i }));
   pendingFill.forEach(([old, e]) => { old.date = e.date; old.updatedAt = now; });
@@ -1750,6 +1756,35 @@ $('#addGo').addEventListener('click', () => {
   save(); $('#addDlg').close(); render(); toast([n && `${n}개를 추가했어요`, f && `${f}개 날짜를 채웠어요`].filter(Boolean).join(' · '));
   setTimeout(() => fillPosters(true), 600);
 });
+/* 표지 링크 (#add={covers:[{title, img|steam|yt}]}) — Claude가 찾아 준 표지를 같은 제목 기록에 붙인다 */
+function openCoverLink(covers){
+  pendingCover = []; pendingAdd = []; pendingFill = [];
+  const rows = covers.map(c => {
+    const cv = normEntry({ title: c.title, img: c.img, steam: c.steam, yt: c.yt });
+    const e = cv && state.entries.find(x => normT(x.title) === normT(c.title));
+    if (e && (cv.img || cv.steam || cv.yt)) pendingCover.push([e, cv]);
+    return `<div class="rank-row" style="cursor:default"><span class="body"><span class="t">${esc(c.title || '')}</span></span>${e ? '<span class="hint-pill">표지 붙임</span>' : '<span class="hint-pill">기록 없음</span>'}</div>`;
+  });
+  $('#addTitle').textContent = pendingCover.length ? `표지 ${pendingCover.length}개 붙이기` : '붙일 기록이 없어요';
+  $('#addList').innerHTML = rows.join('') + '<p class="bmsg">지금 붙어 있는 표지는 이 표지로 바뀌어요.</p>';
+  $('#addGo').hidden = !pendingCover.length;
+  $('#addDlg').showModal();
+}
+$('#addGo').addEventListener('click', () => {
+  if (!pendingCover.length) return;
+  const now = Date.now();
+  pendingCover.forEach(([e, cv]) => { e.img = cv.img; e.steam = cv.steam; e.yt = cv.yt; e.bg = ''; e.rawgId = 0; e.updatedAt = now; });
+  const n = pendingCover.length; pendingCover = [];
+  save(); $('#addDlg').close(); render(); toast(`표지 ${n}개를 붙였어요`);
+});
+/* 표지가 비어 있는 게임 목록을 복사 → Claude에게 붙여넣으면 표지 링크를 만들어 준다 */
+async function copyMissingCovers(){
+  const miss = state.entries.filter(e => !e.img && !e.steam && !e.bg && !e.yt);
+  if (!miss.length){ toast('표지가 비어 있는 게임이 없어요'); return; }
+  const text = '뉴게임플러스 표지 부탁해 (가로 16:9 이미지로 찾아서 표지 링크 만들어 줘)\n' + miss.map(e => `- ${e.title}${[e.year, e.where].filter(Boolean).length ? ` (${[e.year, e.where].filter(Boolean).join(', ')})` : ''}`).join('\n');
+  try { await navigator.clipboard.writeText(text); toast(`표지 없는 게임 ${miss.length}개를 복사했어요 · Claude에게 붙여넣어 주세요`); }
+  catch(_){ prompt('아래 내용을 복사해서 Claude에게 붙여넣어 주세요', text); }
+}
 window.addEventListener('hashchange', checkAddLink);
 
 /* ---------- 메뉴 ---------- */
@@ -1765,6 +1800,7 @@ menu.addEventListener('click', e => {
   else if (act === 'daylog') importDaylog(false);
   else if (act === 'rawg') openRawg();
   else if (act === 'fillposters') fillPosters(false);
+  else if (act === 'askcovers') copyMissingCovers();
   else if (act === 'export') exportFile();
   else if (act === 'import') $('#importFile').click();
   else if (act === 'theme') cycleTheme();
