@@ -737,6 +737,8 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:4
 .step:active{transform:scale(.92);background:color-mix(in srgb,var(--accent) 18%,transparent)}
 @media (hover:hover) and (pointer:fine){ .step:hover{border-color:var(--accent);color:var(--accent)} }
 @media (prefers-reduced-motion:reduce){ .step:active{transform:none} }
+
+.card .sub[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -958,7 +960,7 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.7'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 · v1.6 같은 게임 합치기·점수 크게 · v1.7 점수 −/+ */
+const APP_VERSION = 'v1.8'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 · v1.6 같은 게임 합치기·점수 크게 · v1.7 점수 −/+ · v1.8 감상 없음 숨김 */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['Xbox','#4CA860'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
@@ -1298,6 +1300,7 @@ function fillCard(n, e){
   const sub = n.querySelector('.sub'); const txt = st === 'seen' ? e.note : e.memo;
   sub.textContent = txt || (want ? '메모 없음' : watching ? '어디까지 했는지 적어 두세요' : '감상 없음'); sub.classList.toggle('empty', !txt);
   sub.classList.toggle('note', st === 'seen');
+  sub.hidden = st === 'seen' && !txt; /* 감상이 없으면 빈 줄을 안 보여 준다 */
   const ex = n.querySelector('.ex'); ex.textContent = ''; ex.hidden = true;
   const m = n.querySelector('.meta'); m.textContent = '';
   if (e.where){ const tg = document.createElement('span'); tg.className = 'tag'; tg.style.setProperty('--tc', placeColor(e.where)); tg.innerHTML = '<i></i>'; tg.append(want ? `${e.where}로 할 예정` : e.where); m.append(tg); }
