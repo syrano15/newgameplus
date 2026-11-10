@@ -730,6 +730,13 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:4
 .card .sub.note{color:var(--muted);opacity:1;-webkit-line-clamp:3;font-size:15px}
 .hero .score .sc.lg{width:76px;height:76px;font-size:34px;clip-path:polygon(15px 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,0 100%,0 15px)}
 @media (max-width:760px){ .sc.xl{width:64px;height:64px;font-size:28px} .card .side{min-width:70px} }
+
+.stepper{display:flex;align-items:center;gap:6px;flex:none}
+.step{width:38px;height:44px;border:1px solid var(--line-2);border-radius:5px;background:var(--surface-2);color:var(--text);font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;cursor:pointer;touch-action:manipulation;user-select:none;
+  transition:transform .12s var(--ease-out),background-color .15s ease,border-color .15s ease}
+.step:active{transform:scale(.92);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+@media (hover:hover) and (pointer:fine){ .step:hover{border-color:var(--accent);color:var(--accent)} }
+@media (prefers-reduced-motion:reduce){ .step:active{transform:none} }
 </style>
 </head>
 <body>
@@ -840,7 +847,7 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:4
         <span class="flabel" id="lblScore">점수 <small style="font-weight:500;color:var(--faint)">100점 만점</small></span>
         <div class="score-input">
           <div class="sbar" id="scoreIn" role="slider" tabindex="0" aria-labelledby="lblScore" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="track"><div class="fill"></div></div><div class="ticks"></div><div class="knob"></div></div>
-          <input class="in sval" id="scoreVal" inputmode="numeric" maxlength="3" placeholder="–" aria-label="점수 직접 입력">
+          <div class="stepper"><button type="button" class="step" data-step="-1" aria-label="1점 내리기">−</button><input class="in sval" id="scoreVal" inputmode="numeric" maxlength="3" placeholder="–" aria-label="점수 직접 입력"><button type="button" class="step" data-step="1" aria-label="1점 올리기">+</button></div>
           <div class="hint" id="scoreHint">밀어서 매기기</div>
         </div>
         <div class="score-presets" id="presets"></div>
@@ -951,7 +958,7 @@ const lsDel = k => { try{ localStorage.removeItem(k); }catch(_){} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 /* ---------- 상수 ---------- */
-const APP_VERSION = 'v1.6'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 · v1.6 같은 게임 합치기·점수 크게 */
+const APP_VERSION = 'v1.7'; /* v1.0 첫 버전 — 엔딩크레딧 구조 + 100점 점수 · 접은 게임 · 플레이 시간 · RAWG/스팀 표지 · v1.1 한글 제목 표지(Wikidata) · 사이버 디자인 · v1.2 줄임말 검색 · v1.3 가로 이미지·큰 카드·데이로그 끝낸 게임 · v1.4 Xbox 탭·표지 링크 · v1.5 트레일러 썸네일·Claude 표지 링크 · v1.6 같은 게임 합치기·점수 크게 · v1.7 점수 −/+ */
 const KEY = 'newgameplus.v1', THEME_KEY = 'newgameplus.theme';
 /* 기기 이름·색은 데이로그 게임 플랫폼과 맞춘다 */
 const PLACES = [['PS','#3E7DD6'],['Xbox','#4CA860'],['스위치','#E2564E'],['PC','#6E82A0'],['모바일','#9B8CF5']];
@@ -1495,6 +1502,18 @@ scoreIn.addEventListener('keydown', e => {
 });
 scoreVal.addEventListener('input', () => { const d = scoreVal.value.replace(/\D/g, '').slice(0, 3); if (d !== scoreVal.value) scoreVal.value = d; setScore(d, true); });
 scoreVal.addEventListener('blur', () => setScore(rating));
+/* −/+ 버튼: 누르면 1점, 꾹 누르고 있으면 계속 */
+$$('.step').forEach(btn => {
+  let hold, rep;
+  const stop = () => { clearTimeout(hold); clearInterval(rep); };
+  btn.addEventListener('pointerdown', e => {
+    e.preventDefault(); const d = +btn.dataset.step;
+    setScore(rating + d);
+    hold = setTimeout(() => { rep = setInterval(() => setScore(rating + d), 70); }, 380);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+  btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); setScore(rating + +btn.dataset.step); } });
+});
 $('#presets').innerHTML = [50, 60, 70, 80, 90, 100].map(v => `<button type="button" data-v="${v}">${v}</button>`).join('');
 $('#presets').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) setScore(+b.dataset.v); });
 
